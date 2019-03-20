@@ -1,0 +1,64 @@
+---
+name: create_customer_form
+resource: modules/stripe_payments/customer
+resource_owner: anyone
+fields:
+  properties:
+    email:
+    default_source:
+    description:
+      property_options:
+        virtual: true
+    stripe_id:
+      validation:
+        presence: true
+    external_id:
+    source:
+      property_options:
+        virtual: true
+    skip_credit_card_creation:
+      property_options:
+        virtual: true
+    card_brand:
+    card_exp_month:
+    card_exp_year:
+    card_last4:
+callback_actions: >
+  {% if form.properties.default_source != blank %}
+    {% if form.properties.skip_credit_card_creation != "true" %}
+      {%- execute_query 'modules/stripe_payments/create_card', result_name: 'g_card',
+        customer_id: form.id
+        external_customer_id: form.properties.external_id
+        stripe_customer_id: form.properties.stripe_id
+        stripe_id: form.properties.default_source
+        brand: form.properties.card_brand
+        exp_month: form.properties.card_exp_month
+        exp_year: form.properties.card_exp_year
+        last4: form.properties.card_last4
+      -%}
+    {% endif %}
+  {% endif %}
+default_payload: >
+  {% if form %}
+    {% parse_json request_data %}
+      {
+        "email": "{{ context.params.properties_attributes.email }}",
+        "description": "{{ context.params.properties_attributes.description }}",
+        "source": "{{ context.params.properties_attributes.source }}"
+      }
+    {% endparse_json %}
+    {%- execute_query 'modules/stripe_payments/create_customer_in_stripe', result_name: 'g', data: request_data -%}
+    {% assign response_body = g.api_call_send.response.body | to_hash %}
+    {
+      "properties_attributes": {
+        "external_id": "{{ context.params.properties_attributes.external_id }}",
+        "stripe_id": "{{ response_body.id }}",
+        "default_source": "{{ response_body.default_source }}",
+        "card_brand": "{{ response_body.sources.data[0].brand }}",
+        "card_exp_month": "{{ response_body.sources.data[0].exp_month }}",
+        "card_exp_year": "{{ response_body.sources.data[0].exp_year }}",
+        "card_last4": "{{ response_body.sources.data[0].last4 }}"
+      }
+    }
+  {% endif %}
+---

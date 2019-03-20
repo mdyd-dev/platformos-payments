@@ -1,0 +1,22 @@
+---
+name: create_customer_in_stripe
+to: https://api.stripe.com/v1/customers
+enabled: true
+format: https
+trigger_condition: true
+request_type: Post
+callback: >
+  {%- assign response_data = response.body | to_hash -%}
+  {% if response_data.error %}
+    {%- log response_data.error, type: 'modules/stripe_payments/create_customer' -%}
+  {% endif %}
+headers: >
+  {% if data %}
+    {%- include 'modules/stripe_payments/shared/api_credentials' -%}
+    {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Bearer {{ context.exports.stripe.stripe_sk_key }}"
+    }
+  {% endif %}
+---
+email={{ data.email }}&description={{ data.description | url_encode }}&source={{ data.source }}{% for data in data.metadata %}&metdata[{{ data[0] }}]={{ data[1] | url_encode }}{% endfor %}
