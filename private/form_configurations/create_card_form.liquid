@@ -97,7 +97,7 @@ default_payload: >
     {% endif %}
   {% endif %}
 authorization_policies:
-  - hmac_validation
+  - modules/stripe_payments/hmac_validation
 ---
 {% include 'modules/stripe_payments/shared/api_credentials' %}
 {% form %}

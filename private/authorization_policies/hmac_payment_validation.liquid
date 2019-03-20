@@ -1,0 +1,13 @@
+---
+name: hmac_payment_validation
+---
+{% assign key = context.params.customer_id | append: '|' | append: context.params.expires_in | append: '|' | append: context.params.amount_cents | append: "|" | append: context.params.redirect_to %}
+{% assign key = key | append: '|' | append: context.params.external_id %}
+{% assign key = key | append: '|' | append: context.params.currency | append: '|' | append: context.params.destination | append: '|' | append: context.params.application_fee_cents %}
+{% assign key = key | append: '|' | append: context.params.statement_descriptor | append: '|' | append: context.params.description | append: '|' | append: context.params.transfer_group %}
+
+{% assign expires_in = context.params.expires_in | to_time %}
+{% assign now = "now" | to_time %}
+{% assign expires_in_minus_now = now | time_diff: expires_in %}
+{% assign computed_hmac = key | compute_hmac: context.constants.partner_portal_secret %}
+{% if context.params.signature == computed_hmac and expires_in_minus_now > 0 %}true{% endif %}
