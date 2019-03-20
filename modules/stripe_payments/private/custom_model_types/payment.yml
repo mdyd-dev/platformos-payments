@@ -1,0 +1,35 @@
+---
+name: payment
+properties:
+- name: credit_card_id
+  type: string
+- name: external_id
+  type: string
+- name: amount_cents
+  type: integer
+- name: application_fee_cents
+  type: integer
+- name: currency
+  type: string
+- name: description
+  type: string
+- name: statement_descriptor
+  type: string
+- name: customer_id
+  type: string
+- name: external_customer_id
+  type: string
+- name: destination
+  type: string
+- name: transfer_group
+  type: string
+- name: paid_at
+  type: datetime
+- name: failed_at
+  type: datetime
+- name: response_errors
+  type: string
+- name: status
+  type: string
+- name: charge_id
+  type: string

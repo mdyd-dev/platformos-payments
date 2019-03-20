@@ -1,0 +1,115 @@
+---
+name: create_card_form
+resource: modules/stripe_payments/credit_card
+resource_owner: anyone
+redirect_to: "{{ context.params.redirect_to }}"
+fields:
+  customizable_type:
+  customizable_id:
+  properties:
+    customer_email:
+      property_options:
+        virtual: true
+    token:
+      property_options:
+        virtual: true
+    metadata:
+      property_options:
+        virtual: true
+    stripe_customer_id:
+      validation:
+        presence: true
+    customer_id:
+      validation:
+        presence: true
+    external_customer_id:
+      validation:
+        presence: true
+    stripe_id:
+      validation:
+        presence: true
+    brand:
+      validation:
+        presence: true
+    exp_month:
+      validation:
+        presence: true
+    exp_year:
+      validation:
+        presence: true
+    last4:
+      validation:
+        presence: true
+callback_actions:
+default_payload: >
+  {% if form %}
+    {% assign external_id = form.properties.external_customer_id | default: context.params.customer_id %}
+    {%- query_graph 'modules/stripe_payments/get_customer_by_external_id', result_name: 'g_customer', external_id: external_id -%}
+    {% assign stripe_customer_id = g_customer.customizations.results.first.stripe_id %}
+    {% if stripe_customer_id != blank %}
+      {% parse_json cc_data %}
+        {
+          "customer_id": "{{ stripe_customer_id }}",
+          "source": "{{ form.properties.token | default: context.params.form.properties_attributes.token }}"
+        }
+      {% endparse_json %}
+      {%- execute_query 'modules/stripe_payments/create_card_in_stripe', result_name: 'g', data: cc_data -%}
+      {% assign response_body = g.api_call_send.response.body | to_hash %}
+      {
+        "customizable_type": "Customization",
+        "customizable_id": "{{ response_body.id }}",
+        "user_id": "{{ context.current_user.id }}",
+        "properties_attributes": {
+          "stripe_customer_id": "{{ stripe_customer_id }}",
+          "external_customer_id": "{{ external_id }}",
+          "stripe_id": "{{ response_body.id }}",
+          "brand": "{{ response_body.brand }}",
+          "exp_month": "{{ response_body.exp_month }}",
+          "exp_year": "{{ response_body.exp_year }}",
+          "last4": "{{ response_body.last4 }}",
+          "customer_id": "{{ g_customer.customizations.results.first.id }}"
+        }
+      }
+    {% else %}
+      {% assign email = form.properties.customer_email | default: context.params.customer_email %}
+      {% assign token = form.properties.token | default: context.params.form.properties_attributes.token %}
+      {%- execute_query 'modules/stripe_payments/create_customer', result_name: 'g_customer',
+        email: email,
+        external_id: external_id,
+        source: token,
+        skip_credit_card_creation: "true"
+      -%}
+      {
+        "customizable_type": "Customization",
+        "customizable_id": "{{ g_customer.id }}",
+        "user_id": "{{ context.current_user.id }}",
+        "properties_attributes": {
+          "stripe_customer_id": "{{ g_customer.customer.properties.stripe_id }}",
+          "external_customer_id": "{{ external_id }}",
+          "stripe_id": "{{ g_customer.customer.properties.default_source }}",
+          "brand": "{{ g_customer.customer.properties.card_brand }}",
+          "exp_month": "{{ g_customer.customer.properties.card_exp_month }}",
+          "exp_year": "{{ g_customer.customer.properties.card_exp_year }}",
+          "last4": "{{ g_customer.customer.properties.card_last4 }}",
+          "customer_id": "{{ g_customer.customer.id }}"
+        }
+      }
+    {% endif %}
+  {% endif %}
+authorization_policies:
+  - hmac_validation
+---
+{% include 'modules/stripe_payments/shared/api_credentials' %}
+{% form %}
+  {% assign customer_email = context.params.customer_email %}
+  {% assign external_customer_id = context.params.customer_id %}
+  <input type="hidden" name="redirect_to" value="{{ context.params.redirect_to | default: 'https://portal.apps.near-me.com/partners' }}" />
+  <input type="hidden" name="customer_email" value="{{ customer_email }}" />
+  <input type="hidden" name="expires_in" value="{{ context.params.expires_in }}" />
+  <input type="hidden" name="metadata" value={{ context.params.metadata | json}} />
+  <input type="hidden" name="customer_id" value="{{ external_customer_id }}" />
+  <input type="hidden" name="signature" value="{{ context.params.signature }}" />
+  <input type="hidden" name="{{ form_builder.fields.properties.token.name }}" value="" data-cc-token />
+  {% include 'modules/stripe_payments/card/form' %}
+
+{% endform %}

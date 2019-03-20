@@ -1,0 +1,20 @@
+query get_customer_by_stripe_id($stripe_customer_id: String!) {
+  customizations(
+    per_page: 1
+    name: "modules/stripe_payments/customer"
+    is_deleted: false
+    properties: [
+      { name: "stripe_id", value: $stripe_customer_id }
+    ]
+    sort: {
+      name: "created_at", order: "DESC"
+      }
+  ) {
+    results {
+      id
+      stripe_id: property(name: "stripe_id")
+      email: property(name: "email")
+      name: property(name: "name")
+    }
+  }
+}

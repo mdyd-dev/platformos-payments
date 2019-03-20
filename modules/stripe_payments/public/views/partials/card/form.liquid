@@ -1,0 +1,30 @@
+{% if form_builder.errors != blank %}
+  <p class="alert-danger">
+  {{ form_builder.errors }}
+  </p>
+  {% log "something went really wrong on setup-card: ", type: 'error' %}
+  {% log form_builder.errors, type: 'error' %}
+{% endif %}
+
+<div class="form-group form_credit_card_id">
+  <input style="display: none;" type="radio" value="new" id="form_credit_card_id_new" data-credit-card="new" checked>
+</div>
+<div class="row">
+  <div class="col">
+    <button type="button" class="btn btn-primary pull-left mr-5" data-credit-card="pay" hidden>
+      <i class="fa fa-lock"></i> Add new credit card
+    </button>
+  </div>
+</div>
+<div
+  class="hidden"
+  data-add-new-card="true"
+  data-user-email="{{ context.params.customer_email }}"
+  data-checkout-title="PlatformOS"
+  data-amount=""
+  data-checkout-description="{{ context.params.description }}"
+  data-public-key="{{ context.exports.stripe.stripe_pk_key }}"
+  data-button-label="Add"
+  hidden
+  >
+</div>
