@@ -43,7 +43,7 @@ default_payload: >
       }
     {% endparse_json %}
     {%- execute_query 'modules/stripe_payments/create_charge_in_stripe', result_name: 'g', data: request_data -%}
-    {% endcomment %}
+
     {% assign now = 'now' | to_time | strftime: "%d-%m-%Y %H:%M:%S"  %}
     {% assign response_body = g.api_call_send.response.body | to_hash %}
     {
