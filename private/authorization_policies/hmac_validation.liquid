@@ -1,9 +1,0 @@
----
-name: hmac_validation
----
-{% assign key = context.params.customer_id | append: '|' | append: context.params.expires_in | append: '|' | append: context.params.customer_email | append: "|" | append: context.params.redirect_to %}
-{% assign expires_in = context.params.expires_in | to_time %}
-{% assign now = "now" | to_time %}
-{% assign expires_in_minus_now = now | time_diff: expires_in %}
-{% assign computed_hmac = key | compute_hmac: context.constants.partner_portal_secret %}
-{% if context.params.signature == computed_hmac and expires_in_minus_now > 0 %}true{% endif %}
