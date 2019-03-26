@@ -1,5 +1,5 @@
 ---
-name: create_payment
+name: create_payment_form
 resource: modules/stripe_payments/payment
 resource_owner: anyone
 flash_notice: "Successfully paid!"
@@ -38,69 +38,25 @@ configuration:
     paid_at:
     failed_at:
 default_payload: >
-  {% if form %}
-    {% assign external_id = context.params.customer_id %}
-
-    {%- query_graph 'modules/stripe_payments/get_credit_cards_by_customer_id', result_name: 'g_credit_card', external_customer_id: external_id -%}
-    {% assign credit_card = g_credit_card.customizations.results.last %}
-
-    {% assign currency = conext.params.currency | default: 'USD' %}
-    {%- execute_query 'modules/stripe_payments/create_charge', result_name: 'g',
-      credit_card_id: credit_card.id,
-      currency: currency,
-      description: context.params.description,
-      statement_descriptor: context.params.statement_descriptor,
-      capture: "true",
-      customer_id: credit_card.properties.customer_id,
-      external_customer_id: external_id,
-      destination: context.params.destination,
-      transfer_group: context.params.transfer_group,
-      amount_cents: context.params.amount_cents,
-      application_fee_cents: context.params.application_fee_cents,
-    -%}
-    {
-      "properties_attributes": {
-        "statement_descriptor": "{{ context.params.statement_descriptor }}",
-        "customer_id": "{{ credit_card.properties.customer_id }}",
-        "external_customer_id": "{{ external_id }}",
-        "credit_card_id": "{{ credit_card.id }}",
-        "destination": "{{ context.params.destination }}",
-        "transfer_group": "{{ context.params.transfer_group }}",
-        "amount_cents": "{{ context.params.amount_cents }}",
-        "currency": "{{ currency }}",
-        "external_id": "{{ external_id }}",
-        "application_fee_cents": "{{ context.params.application_fee_cents }}",
-        "charge_id": "{{ g.charge.id }}",
-        {% if g.charge.properties.paid_at != blank %}
-          "paid_at": "{{ g.charge.properties.paid_at }}",
-          "status": "{{ g.charge.properties.status }}",
-          "failed_at": ""
-        {% else %}
-          {% assign now = 'now' | to_time | strftime: "%d-%m-%Y %H:%M:%S" %}
-          "failed_at": "{{ now }}",
-          "response_errors": {{ g.charge.properties | json }}
-        {% endif %}
-      }
-    }
-  {% endif %}
+  {% include 'modules/stripe_payments/forms/create_payment_default_payload', form: form %}
 authorization_policies:
-  - hmac_payment_validation
+  - modules/stripe_payments/validate_signature
 ---
+{% include 'modules/stripe_payments/shared/api_credentials' %}
+{% capture "signature" -%}
+{% include 'modules/stripe_payments/shared/calculate_signature', properties: payment, expires_in: expires_in, redirect_to: redirect_to %}
+{%- endcapture -%}
 
 {% form %}
-  <input type="hidden" name="customer_id" value="{{ context.params.customer_id }}" />
-  <input type="hidden" name="redirect_to" value="{{ context.params.redirect_to | default: 'https://portal.apps.near-me.com/partners' }}" />
-  <input type="hidden" name="expires_in" value="{{ context.params.expires_in }}" />
-  <input type="hidden" name="signature" value="{{ context.params.signature }}" />
-  <input type="hidden" name="amount_cents" value="{{ context.params.amount_cents }}" />
-  <input type="hidden" name="destination" value="{{ context.params.destination }}" />
-  <input type="hidden" name="currency" value="{{ context.params.currency }}" />
-  <input type="hidden" name="application_fee_cents" value="{{ context.params.application_fee_cents }}" />
-  <input type="hidden" name="description" value="{{ context.params.description }}" />
-  <input type="hidden" name="statement_descriptor" value="{{ context.params.statement_descriptor }}" />
-  <input type="hidden" name="transfer_group" value="{{ context.params.transfer_group }}" />
+  <input type="hidden" name="signature" value="{{ signature }}" />
+  <input type="hidden" name="redirect_to" value="{{ redirect_to }}" />
+  <input type="hidden" name="expires_in" value="{{ expires_in }}" />
 
-  {%- query_graph 'modules/stripe_payments/get_customer_by_external_id', result_name: 'g_customer', external_id: context.params.customer_id -%}
+  {% for payment_attribute in payment %}
+    <input type="text" name="{{ form_builder.fields.properties[payment_attribute.first]['name'] }}" value="{{ payment_attribute.last }}" />
+  {% endfor %}
+
+  {%- query_graph 'modules/stripe_payments/get_customer_by_external_id', result_name: 'g_customer', external_id: payment.customer_id -%}
   {% assign customer = g_customer.customizations.results.last %}
   {% if customer.id != blank %}
     {%- query_graph 'modules/stripe_payments/get_credit_cards_by_customer_id', result_name: 'g_credit_card', customer_id: customer.id -%}
@@ -112,14 +68,14 @@ authorization_policies:
   <div class="row">
     <div class="col-xs-12">
       <div>Customer email: {{ customer.email }}</div>
-      <div>amount_cents: {{ context.params.amount_cents }}</div>
-      <div>currency: {{ context.params.currency | default: 'USD' }}</div>
+      <div>amount_cents: {{ payment.amount_cents }}</div>
+      <div>currency: {{ payment.currency | default: 'USD' }}</div>
       <div>Credit card to be charged: **** **** **** {{ credit_card.properties.last4 }}</div>
-      <div>Destination: {{ context.params.destination }}</div>
-      <div>Application Fee Cents: {{ context.params.application_fee_cents }}</div>
-      <div>Description: {{ context.params.description }}</div>
-      <div>Statement descriptor: {{ context.params.statement_descriptor }}</div>
-      <div>Transfer group: {{ context.params.transfer_group }}</div>
+      <div>Destination: {{ payment.destination }}</div>
+      <div>Application Fee Cents: {{ payment.application_fee_cents }}</div>
+      <div>Description: {{ payment.description }}</div>
+      <div>Statement descriptor: {{ payment.statement_descriptor }}</div>
+      <div>Transfer group: {{ payment.transfer_group }}</div>
 
       <button type="submit" class="btn btn-primary pull-left mr-5">
         <i class="fa fa-lock"></i> Charge
