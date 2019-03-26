@@ -1,5 +1,5 @@
 ---
-name: get_payout_from_stripe
+name: stripe/get_payout
 to: https://api.stripe.com/v1/balance/history?payout={{ data.payout_id }}
 enabled: true
 format: https

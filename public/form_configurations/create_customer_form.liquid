@@ -47,7 +47,8 @@ default_payload: >
         "source": "{{ context.params.properties_attributes.source }}"
       }
     {% endparse_json %}
-    {%- execute_query 'modules/payments/create_customer_in_stripe', result_name: 'g', data: request_data -%}
+    {%- assign gateway_template = "modules/payments/create_customer_in_stripe" -%}
+    {%- execute_query 'modules/payments/gateway_create_customer', result_name: 'g', data: request_data, gateway_template: gateway_template -%}
     {% assign response_body = g.api_call_send.response.body | to_hash %}
     {
       "properties_attributes": {

@@ -42,7 +42,8 @@ default_payload: >
         "metadata": {{ data.metadata | default: 'null' }}
       }
     {% endparse_json %}
-    {%- execute_query 'modules/payments/create_charge_in_stripe', result_name: 'g', data: request_data -%}
+    {%- assign gateway_template = "modules/payments/stripe/create_charge" -%}
+    {%- execute_query 'modules/payments/gateway_create_charge', result_name: 'g', data: request_data, gateway_template: gateway_template -%}
 
     {% assign now = 'now' | to_time | strftime: "%d-%m-%Y %H:%M:%S"  %}
     {% assign response_body = g.api_call_send.response.body | to_hash %}
