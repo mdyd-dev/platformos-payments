@@ -1,6 +1,6 @@
 ---
 name: create_card_form
-resource: modules/stripe_payments/credit_card
+resource: modules/payments/credit_card
 resource_owner: anyone
 redirect_to: "{{ context.params.redirect_to }}"
 fields:
@@ -44,7 +44,7 @@ callback_actions:
 default_payload: >
   {% if form %}
     {% assign external_id = params.properties_attributes.external_customer_id %}
-    {%- query_graph 'modules/stripe_payments/get_customer_by_external_id', result_name: 'g_customer', external_id: external_id -%}
+    {%- query_graph 'modules/payments/get_customer_by_external_id', result_name: 'g_customer', external_id: external_id -%}
     {% assign stripe_customer_id = g_customer.customizations.results.first.stripe_id %}
     {% if stripe_customer_id != blank %}
       {% parse_json cc_data %}
@@ -55,7 +55,7 @@ default_payload: >
       {% endparse_json %}
 
       {%- log cc_data, type: "cc_data" -%}
-      {%- execute_query 'modules/stripe_payments/create_card_in_stripe', result_name: 'g', data: cc_data -%}
+      {%- execute_query 'modules/payments/create_card_in_stripe', result_name: 'g', data: cc_data -%}
       {% assign response_body = g.api_call_send.response.body | to_hash %}
       {
         "customizable_type": "Customization",
@@ -75,7 +75,7 @@ default_payload: >
     {% else %}
       {% assign email = form.properties.customer_email | default: params.customer_email %}
       {% assign token = form.properties.token | default: params.properties_attributes.token %}
-      {%- execute_query 'modules/stripe_payments/create_customer', result_name: 'g_customer',
+      {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer',
         email: email,
         external_id: external_id,
         source: token,
@@ -99,11 +99,11 @@ default_payload: >
     {% endif %}
   {% endif %}
 authorization_policies:
-  - modules/stripe_payments/validate_signature
+  - modules/payments/validate_signature
 ---
-{%- include 'modules/stripe_payments/shared/api_credentials' -%}
+{%- include 'modules/payments/shared/api_credentials' -%}
 {%- capture "signature" -%}
-  {% include 'modules/stripe_payments/shared/calculate_signature', properties: properties, expires_in: expires_in, redirect_to: redirect_to %}
+  {% include 'modules/payments/shared/calculate_signature', properties: properties, expires_in: expires_in, redirect_to: redirect_to %}
 {%- endcapture -%}
 
 <script src="https://checkout.stripe.com/checkout.js" defer></script>
@@ -118,6 +118,6 @@ authorization_policies:
     <input type="text" name="{{ form_builder.fields.properties[property.first]['name'] }}" value="{{ property.last }}" />
   {% endfor %}
   <input type="text" name="{{ form_builder.fields.properties.token.name }}" value="" data-cc-token />
-  {% include 'modules/stripe_payments/card/form' %}
+  {% include 'modules/payments/card/form' %}
 
 {% endform %}

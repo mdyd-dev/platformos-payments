@@ -15,7 +15,7 @@ mutation create_customer(
         { name: "skip_credit_card_creation", value: $skip_credit_card_creation }
       ]
     }
-    form_configuration_name: "modules/stripe_payments/create_customer_form"
+    form_configuration_name: "modules/payments/create_customer_form"
   ) {
     id
     properties

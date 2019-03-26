@@ -11,7 +11,7 @@ mutation create_card(
 ) {
   card: customization_create(
     customization: {
-      custom_model_type_name: "modules/stripe_payments/credit_card"
+      custom_model_type_name: "modules/payments/credit_card"
       customizable_id: $customer_id
       properties: [
         { name: "token", value: $token }
@@ -24,7 +24,7 @@ mutation create_card(
         { name: "last4", value: $last4 }
       ]
     }
-    form_configuration_name: "modules/stripe_payments/create_card_form"
+    form_configuration_name: "modules/payments/create_card_form"
   ) {
     id
     properties

@@ -25,7 +25,7 @@ mutation create_payment(
         { name: "transfer_group", value: $transfer_group }
       ]
     }
-    form_configuration_name: "modules/stripe_payments/api_create_payment_form"
+    form_configuration_name: "modules/payments/api_create_payment_form"
   ) {
     id
     properties

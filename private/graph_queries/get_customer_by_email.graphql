@@ -1,7 +1,7 @@
 query get_customer_by_email($email: String!) {
   customizations(
     per_page: 1
-    name: "modules/stripe_payments/customer"
+    name: "modules/payments/customer"
     is_deleted: false
     properties: [
       { name: "email", value: $email }

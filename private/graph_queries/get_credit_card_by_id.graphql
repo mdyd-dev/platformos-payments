@@ -2,7 +2,7 @@ query get_credit_card_by_id($id: ID!) {
   customizations(
     per_page: 1
     id: $id
-    name: "modules/stripe_payments/credit_card"
+    name: "modules/payments/credit_card"
     is_deleted: false
     sort: {
       name: "created_at", order: "DESC"

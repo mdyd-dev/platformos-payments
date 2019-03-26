@@ -1,6 +1,6 @@
 ---
 name: api_create_payment_form
-resource: modules/stripe_payments/payment
+resource: modules/payments/payment
 resource_owner: anyone
 flash_notice: "Successfully paid!"
 flash_alert: "Payment failed!"
@@ -38,7 +38,7 @@ configuration:
     paid_at:
     failed_at:
 default_payload: >
-  {% include 'modules/stripe_payments/forms/create_payment_default_payload' , form: form %}
+  {% include 'modules/payments/forms/create_payment_default_payload' , form: form %}
 authorization_policies:
 ---
 

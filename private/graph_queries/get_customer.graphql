@@ -1,7 +1,7 @@
 query get_customer($id: ID!) {
   customizations(
     per_page: 1
-    name: "modules/stripe_payments/customer"
+    name: "modules/payments/customer"
     is_deleted: false
     id:  $id
   ) {

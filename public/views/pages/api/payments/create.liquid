@@ -3,10 +3,10 @@ slug: api/payments
 method: post
 layout_name: ''
 authorization_policies:
-- modules/stripe_payments/hmac_validation
+- modules/payments/hmac_validation
 ---
 {% assign external_id = context.params.external_id | default: context.params.customer_id %}
-{%- execute_query 'modules/stripe_payments/create_payment', result_name: 'g_payment',
+{%- execute_query 'modules/payments/create_payment', result_name: 'g_payment',
   customer_id: context.params.customer_id,
   external_id: external_id,
   external_customer_id: context.params.customer_id,

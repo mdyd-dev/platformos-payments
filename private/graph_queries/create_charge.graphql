@@ -27,7 +27,7 @@ mutation create_charge(
         { name: "application_fee_cents", value: $application_fee_cents }
       ]
     }
-    form_configuration_name: "modules/stripe_payments/create_charge_form"
+    form_configuration_name: "modules/payments/create_charge_form"
   ) {
     id
     properties

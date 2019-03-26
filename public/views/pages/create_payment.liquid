@@ -2,7 +2,7 @@
 slug: create-payment
 layout_name: ''
 authorization_policies:
-- modules/stripe_payments/hmac_validation
+- modules/payments/hmac_validation
 ---
 
 {% parse_json "payment" %}
@@ -21,7 +21,7 @@ authorization_policies:
 {% endparse_json %}
 
 {% 
-  include_form 'modules/stripe_payments/create_payment_form',
+  include_form 'modules/payments/create_payment_form',
   payment: payment,
   redirect_to: context.params.redirect_to,
   expires_in: context.params.expires_in

@@ -1,7 +1,7 @@
 mutation delete_card_in_stripe($data: HashObject) {
   api_call_send(
     data: $data
-    template: { name: "modules/stripe_payments/delete_card_in_stripe" }
+    template: { name: "modules/payments/delete_card_in_stripe" }
   ) {
     response{ status body }
     errors {

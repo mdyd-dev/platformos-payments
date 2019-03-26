@@ -2,7 +2,7 @@ query get_credit_cards_by_stripe_customer_id($stripe_customer_id: String!, $stri
   customizations(
     per_page: 20
     id: $id
-    name: "modules/stripe_payments/credit_card"
+    name: "modules/payments/credit_card"
     is_deleted: false
     properties: [
       { name: "stripe_id", value: $stripe_id }

@@ -8,11 +8,11 @@ request_type: Delete
 callback: >
   {%- assign response_data = response.body | to_hash -%}
   {% if response_data.error %}
-    {%- log response_data.error, type: 'modules/stripe_payments/delete_card' -%}
+    {%- log response_data.error, type: 'modules/payments/delete_card' -%}
   {% endif %}
 headers: >
   {% if data %}
-    {%- include 'modules/stripe_payments/shared/api_credentials' -%}
+    {%- include 'modules/payments/shared/api_credentials' -%}
     {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Bearer {{ context.exports.stripe.stripe_sk_key }}"
