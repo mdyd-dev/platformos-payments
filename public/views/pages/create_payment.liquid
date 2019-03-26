@@ -1,0 +1,29 @@
+---
+slug: create-payment
+layout_name: ''
+authorization_policies:
+- modules/stripe_payments/hmac_validation
+---
+
+{% parse_json "payment" %}
+{
+  "customer_id": "{{ context.params.customer_id }}",
+  "external_id": "{{ context.params.external_id }}",
+  "external_customer_id": "{{ context.params.customer_id }}",
+  "amount_cents": "{{ context.params.amount_cents }}",
+  "destination": "{{ context.params.destination }}",
+  "currency": "{{ context.params.currency }}",
+  "application_fee_cents": "{{ context.params.application_fee_cents }}",
+  "description": "{{ context.params.description }}",
+  "statement_descriptor": "{{ context.params.statement_descriptor }}",
+  "transfer_group": "{{ context.params.transfer_group }}"
+}
+{% endparse_json %}
+
+{% 
+  include_form 'modules/stripe_payments/create_payment_form',
+  payment: payment,
+  redirect_to: context.params.redirect_to,
+  expires_in: context.params.expires_in
+%}
+

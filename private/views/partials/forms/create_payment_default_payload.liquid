@@ -1,0 +1,33 @@
+{% if form %}
+  {%- query_graph 'modules/stripe_payments/get_credit_cards_by_external_customer_id', result_name: 'g_credit_card', external_customer_id:  params.properties_attributes.external_customer_id -%}
+  {% assign credit_card = g_credit_card.customizations.results.last %}
+  {% assign currency = params.properties_attributes.currency | default: 'USD' %}
+  {%- execute_query 'modules/stripe_payments/create_charge', result_name: 'g',
+    credit_card_id: credit_card.id,
+    currency: currency,
+    description: params.properties_attributes.description,
+    statement_descriptor: params.properties_attributes.statement_descriptor,
+    capture: "true",
+    customer_id: credit_card.properties.customer_id,
+    external_customer_id: params.properties_attributes.external_customer_id ,
+    destination: params.properties_attributes.destination,
+    transfer_group: params.properties_attributes.transfer_group,
+    amount_cents: params.properties_attributes.amount_cents,
+    application_fee_cents: params.properties_attributes.application_fee_cents,
+  -%}
+  {
+    "properties_attributes": {
+      "credit_card_id": "{{ credit_card.id }}",
+      "charge_id": "{{ g.charge.id }}",
+      {% if g.charge.properties.paid_at != blank %}
+        "paid_at": "{{ g.charge.properties.paid_at }}",
+        "status": "{{ g.charge.properties.status }}",
+        "failed_at": ""
+      {% else %}
+        {% assign now = 'now' | to_time | strftime: "%d-%m-%Y %H:%M:%S" %}
+        "failed_at": "{{ now }}",
+        "response_errors": {{ g.charge.properties | json }}
+      {% endif %}
+    }
+  }
+{% endif %}

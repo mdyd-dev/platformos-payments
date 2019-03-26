@@ -1,0 +1,8 @@
+{%- assign key = object.expires_in | default: expires_in -%}
+{%- assign key = key  | append: '|' | append: redirect_to -%}
+{%- for property in properties -%}
+  {%- if property.last != blank and property.first != 'token' -%}
+    {%- assign key = key | append: '|' | append: property.last -%}
+  {%- endif -%}
+{%- endfor -%}
+{{- key | compute_hmac: context.constants.partner_portal_secret -}}

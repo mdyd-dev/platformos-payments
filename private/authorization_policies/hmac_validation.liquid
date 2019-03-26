@@ -1,0 +1,19 @@
+---
+name: hmac_validation
+---
+{%- assign except_params = 'signature|controller|action|slug' | split: "|" -%}
+{%- assign signed_params = '' | split: ',' -%}
+{%- for param in context.params -%}
+  {%- unless except_params contains param.first -%}
+    {%- assign signed_params = signed_params | add_to_array: param.last -%}
+  {%- endunless -%}
+{% endfor -%}
+{%- assign key = signed_params | join: '|' -%}
+{%- assign expires_in = context.params.expires_in | to_time -%}
+{%- assign now = "now" | to_time -%}
+{%- assign expires_in_minus_now = now | time_diff: expires_in -%}
+{%- assign computed_hmac = key | compute_hmac: context.constants.partner_portal_secret -%}
+{% log key, type: "key" %}
+{% log computed_hmac, type: "computed_hmac" %}
+{% log context.params.signature , type: "sig2" %}
+{% if context.params.signature == computed_hmac and expires_in_minus_now > 0 %}true{% endif %}

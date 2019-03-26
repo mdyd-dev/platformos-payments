@@ -1,0 +1,25 @@
+---
+slug: create-credit-card
+layout_name: ''
+authorization_policies: 
+  - modules/stripe_payments/hmac_validation
+---
+{% if context.params.customer_email contains '+' %}
+  Email which includes + is invalid. Please provide different email. <a href="{{ context.params.redirect_to }}">Go back</a>
+{% else %}
+  {% parse_json "properties" %}
+    {
+      "customer_id": "{{ context.params.customer_id }}",
+      "external_customer_id": "{{ context.params.customer_id }}",
+      "customer_email": "{{ context.params.customer_email }}",
+      "metadata": "{{ context.params.metadata | json }}"
+    }
+  {% endparse_json %}
+
+  {% 
+    include_form 'modules/stripe_payments/create_card_form',
+    properties: properties,
+    redirect_to: context.params.redirect_to,
+    expires_in: context.params.expires_in
+  %}
+{% endif %}
