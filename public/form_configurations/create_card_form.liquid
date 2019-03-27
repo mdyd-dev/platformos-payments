@@ -103,7 +103,7 @@ authorization_policies:
   - modules/payments/validate_signature
 ---
 <script src="https://checkout.stripe.com/checkout.js" defer></script>
-<script src="{{ 'CheckoutPaymentForm.js' | asset_url }}" defer></script>
+<script src="{{ 'modules/payments/javascripts/CheckoutPaymentForm.js' | asset_url }}" defer></script>
 
 {%- include 'modules/payments/shared/api_credentials' -%}
 {%- capture "signature" -%}
@@ -120,5 +120,5 @@ authorization_policies:
   {% endfor %}
   <input type="text" name="{{ form_builder.fields.properties.token.name }}" value="" data-cc-token />
   {% include 'modules/payments/card/form' %}
-
 {% endform %}
+

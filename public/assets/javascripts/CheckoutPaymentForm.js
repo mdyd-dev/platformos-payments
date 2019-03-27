@@ -2,11 +2,17 @@ class CheckoutPaymentForm {
   constructor() {
     this.initialize(); // get all the config options from html
     this.configure(); // configure widget
-    this.open(); // show when everything is ready
+    console.log(typeof(this.addNewCardButton));
+    if (this.addNewCardButton != null) {
+      this.addNewCardButton.addEventListener("click", this.open.bind(this));
+    } else { 
+      this.open(); // show when everything is ready
+    }
   }
 
   initialize() {
     this.addCardContainer = document.querySelector('[data-add-new-card]');
+    this.addNewCardButton = document.querySelector('[data="add-new-card-button"]');
     this.form = this.addCardContainer.closest('form');
 
     /* Stripe configuration data */
@@ -21,6 +27,7 @@ class CheckoutPaymentForm {
     this.stripeButtonLabel = this.addCardContainer.dataset.buttonLabel;
     this.stripeAmount = this.addCardContainer.dataset.amount;
   }
+
   configure() {
     this.handler = StripeCheckout.configure({
       key: this.publishableKey,
