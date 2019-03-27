@@ -102,13 +102,13 @@ default_payload: >
 authorization_policies:
   - modules/payments/validate_signature
 ---
+<script src="https://checkout.stripe.com/checkout.js" defer></script>
+<script src="{{ 'CheckoutPaymentForm.js' | asset_url }}" defer></script>
+
 {%- include 'modules/payments/shared/api_credentials' -%}
 {%- capture "signature" -%}
   {% include 'modules/payments/shared/calculate_signature', properties: properties, expires_in: expires_in, redirect_to: redirect_to %}
 {%- endcapture -%}
-
-<script src="https://checkout.stripe.com/checkout.js" defer></script>
-<script src="{{ 'CheckoutPaymentForm.js' | asset_url }}" defer></script>
 
 {% form %}
   <input type="text" name="signature" value="{{ signature }}" />

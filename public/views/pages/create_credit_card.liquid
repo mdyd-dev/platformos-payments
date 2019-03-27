@@ -1,7 +1,7 @@
 ---
 slug: create-credit-card
 layout_name: ''
-authorization_policies: 
+authorization_policies:
 ---
 
 {% parse_json "properties" %}
@@ -14,7 +14,7 @@ authorization_policies:
   {% endparse_json %}
   {% assign expires_in = 'now' | date: '%s' %}
 
-  {% 
+  {%
     include_form 'modules/payments/create_card_form',
     properties: properties,
     redirect_to: 'create-credit-card',

@@ -23,7 +23,7 @@
   data-checkout-title="PlatformOS"
   data-amount=""
   data-checkout-description="{{ context.params.description }}"
-  data-public-key="{{ context.exports.stripe.stripe_pk_key }}"
+  data-public-key="{{ context.exports.payments.gateway.public_key }}"
   data-button-label="Add"
   hidden
   >
