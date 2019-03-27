@@ -1,0 +1,15 @@
+{%- assign gateway_template = "modules/payments/stripe/create_customer" -%}
+{%- execute_query 'modules/payments/create_customer', result_name: 'g_customer',
+  gateway_template: gateway_template,
+  email: email,
+  external_id: external_id,
+  source: token,
+  skip_credit_card_creation: "true",
+
+-%}
+
+          "gateway_id": "{{ customer.properties.default_source }}",
+          "brand": "{{ customer.properties.card_brand }}",
+          "exp_month": "{{ customer.properties.card_exp_month }}",
+          "exp_year": "{{ customer.properties.card_exp_year }}",
+          "last4": "{{ customer.properties.card_last4 }}",

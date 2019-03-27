@@ -43,61 +43,49 @@ fields:
 callback_actions:
 default_payload: >
   {% if form %}
-    {%- assign external_id = params.properties_attributes.external_customer_id %}
-    {%- query_graph 'modules/payments/get_customer_by_external_id', result_name: 'g_customer', external_id: external_id -%}
-    {%- assign gateway_customer_id = g_customer.customizations.results.first.gateway_id %}
-    {% if gateway_customer_id != blank %}
+
+    {% if customer.id != blank %}
       {% parse_json cc_data %}
         {
-          "customer_id": "{{ gateway_customer_id }}",
+          "customer_id": "{{ customer.gateway_id }}",
           "source": "{{ form.properties.token | default: params.properties_attributes.token }}"
         }
       {% endparse_json %}
 
-      {%- log cc_data, type: "cc_data" -%}
       {%- assign gateway_template = "modules/payments/stripe/create_card" -%}
       {%- execute_query 'modules/payments/gateway_create_card', result_name: 'g', data: cc_data, gateway_template: gateway_template -%}
-      {%- assign response_body = g.api_call_send.response.body | to_hash %}
-      {
-        "customizable_type": "Customization",
-        "customizable_id": "{{ response_body.id }}",
-        "user_id": "{{ context.current_user.id }}",
-        "properties_attributes": {
-          "gateway_customer_id": "{{ gateway_customer_id }}",
-          "external_customer_id": "{{ external_id }}",
-          "gateway_id": "{{ response_body.id }}",
-          "brand": "{{ response_body.brand }}",
-          "exp_month": "{{ response_body.exp_month }}",
-          "exp_year": "{{ response_body.exp_year }}",
-          "last4": "{{ response_body.last4 }}",
-          "customer_id": "{{ g_customer.customizations.results.first.id }}"
-        }
-      }
+      {%- assign credit_card = g.api_call_send.response.body | to_hash %}
+      
     {% else %}
       {%- assign email = form.properties.customer_email | default: params.customer_email -%}
       {%- assign token = form.properties.token | default: params.properties_attributes.token -%}
-      {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer',
-        email: email,
-        external_id: external_id,
-        source: token,
-        skip_credit_card_creation: "true"
-      -%}
-      {
-        "customizable_type": "Customization",
-        "customizable_id": "{{ g_customer.id }}",
-        "user_id": "{{ context.current_user.id }}",
-        "properties_attributes": {
-          "gateway_customer_id": "{{ g_customer.customer.properties.gateway_id }}",
-          "external_customer_id": "{{ external_id }}",
-          "gateway_id": "{{ g_customer.customer.properties.default_source }}",
-          "brand": "{{ g_customer.customer.properties.card_brand }}",
-          "exp_month": "{{ g_customer.customer.properties.card_exp_month }}",
-          "exp_year": "{{ g_customer.customer.properties.card_exp_year }}",
-          "last4": "{{ g_customer.customer.properties.card_last4 }}",
-          "customer_id": "{{ g_customer.customer.id }}"
-        }
-      }
+      {% parse_json "customer" %}
+        {% 
+          include 'modules/payments/gateway/create_customer',
+            email: email,
+            token: token,
+            external_id: external_id 
+        %}
+      {% endparse_json %}
+      
+      {%- assign credit_card = customer.credit_card %}
     {% endif %}
+
+    {
+      "customizable_type": "Customization",
+      "customizable_id": "{{ customer.id }}",
+      "user_id": "{{ context.current_user.id }}",
+      "properties_attributes": {
+        "gateway_customer_id": "{{ customer.gateway_id }}",
+        "external_customer_id": "{{ external_id }}",
+        "gateway_id": "{{ credit_card.id }}",
+        "brand": "{{ credit_card.brand }}",
+        "exp_month": "{{ credit_card.exp_month }}",
+        "exp_year": "{{ credit_card.exp_year }}",
+        "last4": "{{ credit_card.last4 }}",
+        "customer_id": "{{ customer.id }}"
+      }
+    }
   {% endif %}
 authorization_policies:
   - modules/payments/validate_signature
