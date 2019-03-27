@@ -5,18 +5,18 @@ authorization_policies:
 ---
 
 {% parse_json "properties" %}
-    {
-      "customer_id": "100",
-      "external_customer_id": "101",
-      "customer_email": "example@platform-os.com",
-      "metadata": "{{ context.params.metadata | json }}"
-    }
-  {% endparse_json %}
-  {% assign expires_in = 'now' | date: '%s' %}
+  {
+    "customer_id": "100",
+    "external_customer_id": "101",
+    "customer_email": "example@platform-os.com",
+    "metadata": "{{ context.params.metadata | json }}"
+  }
+{% endparse_json %}
+{% assign expires_in = 'now' | date: '%s' | plus: 100000 %}
 
-  {%
-    include_form 'modules/payments/create_card_form',
-    properties: properties,
-    redirect_to: 'create-credit-card',
-    expires_in: expires_in
+{%
+  include_form 'modules/payments/create_credit_card_form',
+  properties: properties,
+  redirect_to: 'create-credit-card',
+  expires_in: expires_in
   %}

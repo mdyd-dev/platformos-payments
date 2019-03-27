@@ -12,7 +12,7 @@ query get_customer_by_email($email: String!) {
   ) {
     results {
       id
-      stripe_id: property(name: "stripe_id")
+      gateway_id: property(name: "gateway_id")
       email: property(name: "email")
       name: property(name: "name")
     }

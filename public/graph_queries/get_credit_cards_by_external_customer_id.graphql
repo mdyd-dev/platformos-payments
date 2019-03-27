@@ -1,11 +1,11 @@
-query get_credit_cards_by_external_customer_id($external_customer_id: String!, $stripe_id: String, $id: ID) {
+query get_credit_cards_by_external_customer_id($external_customer_id: String!, $gateway_id: String, $id: ID) {
   customizations(
     per_page: 20
     id: $id
     name: "modules/payments/credit_card"
     is_deleted: false
     properties: [
-      { name: "stripe_id", value: $stripe_id }
+      { name: "gateway_id", value: $gateway_id }
       { name: "external_customer_id", value: $external_customer_id }
     ]
     sort: {

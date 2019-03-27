@@ -1,6 +1,6 @@
 ---
 name: stripe/delete_card
-to: https://api.stripe.com/v1/customers/{{ data.customer_id }}/sources/{{ data.stripe_id }}
+to: https://api.stripe.com/v1/customers/{{ data.customer_id }}/sources/{{ data.gateway_id }}
 enabled: true
 format: https
 trigger_condition: true

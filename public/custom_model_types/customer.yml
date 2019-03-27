@@ -1,7 +1,7 @@
 ---
 name: customer
 properties:
-- name: stripe_id
+- name: gateway_id
   type: string
 - name: external_id
   type: string

@@ -5,13 +5,13 @@ resource_owner: anyone
 redirect_to: "{{ context.params.redirect_to }}"
 fields:
   properties:
-    stripe_customer_id:
-    stripe_id:
+    gateway_customer_id:
+    gateway_id:
 callback_actions: >
   {% parse_json cc_data %}
     {
-      "customer_id": "{{ form.properties.stripe_customer_id }}",
-      "stripe_id": "{{ form.properties.stripe_id }}"
+      "customer_id": "{{ form.properties.gateway_customer_id }}",
+      "gateway_id": "{{ form.properties.gateway_id }}"
     }
   {% endparse_json %}
   {%- execute_query 'modules/payments/delete_card_in_stripe', result_name: 'g', data: cc_data -%}

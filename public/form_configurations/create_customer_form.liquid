@@ -9,7 +9,7 @@ fields:
     description:
       property_options:
         virtual: true
-    stripe_id:
+    gateway_id:
       validation:
         presence: true
     external_id:
@@ -29,8 +29,8 @@ callback_actions: >
       {%- execute_query 'modules/payments/create_card', result_name: 'g_card',
         customer_id: form.id
         external_customer_id: form.properties.external_id
-        stripe_customer_id: form.properties.stripe_id
-        stripe_id: form.properties.default_source
+        gateway_customer_id: form.properties.gateway_id
+        gateway_id: form.properties.default_source
         brand: form.properties.card_brand
         exp_month: form.properties.card_exp_month
         exp_year: form.properties.card_exp_year
@@ -53,7 +53,7 @@ default_payload: >
     {
       "properties_attributes": {
         "external_id": "{{ context.params.properties_attributes.external_id }}",
-        "stripe_id": "{{ response_body.id }}",
+        "gateway_id": "{{ response_body.id }}",
         "default_source": "{{ response_body.default_source }}",
         "card_brand": "{{ response_body.sources.data[0].brand }}",
         "card_exp_month": "{{ response_body.sources.data[0].exp_month }}",

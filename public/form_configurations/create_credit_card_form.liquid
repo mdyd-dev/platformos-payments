@@ -1,5 +1,5 @@
 ---
-name: create_card_form
+name: create_credit_card_form
 resource: modules/payments/credit_card
 resource_owner: anyone
 redirect_to: "{{ context.params.redirect_to }}"
@@ -16,7 +16,7 @@ fields:
     metadata:
       property_options:
         virtual: true
-    stripe_customer_id:
+    gateway_customer_id:
       validation:
         presence: true
     customer_id:
@@ -25,7 +25,7 @@ fields:
     external_customer_id:
       validation:
         presence: true
-    stripe_id:
+    gateway_id:
       validation:
         presence: true
     brand:
@@ -45,17 +45,17 @@ default_payload: >
   {% if form %}
     {%- assign external_id = params.properties_attributes.external_customer_id %}
     {%- query_graph 'modules/payments/get_customer_by_external_id', result_name: 'g_customer', external_id: external_id -%}
-    {%- assign stripe_customer_id = g_customer.customizations.results.first.stripe_id %}
-    {% if stripe_customer_id != blank %}
+    {%- assign gateway_customer_id = g_customer.customizations.results.first.gateway_id %}
+    {% if gateway_customer_id != blank %}
       {% parse_json cc_data %}
         {
-          "customer_id": "{{ stripe_customer_id }}",
+          "customer_id": "{{ gateway_customer_id }}",
           "source": "{{ form.properties.token | default: params.properties_attributes.token }}"
         }
       {% endparse_json %}
 
       {%- log cc_data, type: "cc_data" -%}
-      {%- assign gateway_template = "modules/payments/stripe/create_card" %}
+      {%- assign gateway_template = "modules/payments/stripe/create_card" -%}
       {%- execute_query 'modules/payments/gateway_create_card', result_name: 'g', data: cc_data, gateway_template: gateway_template -%}
       {%- assign response_body = g.api_call_send.response.body | to_hash %}
       {
@@ -63,9 +63,9 @@ default_payload: >
         "customizable_id": "{{ response_body.id }}",
         "user_id": "{{ context.current_user.id }}",
         "properties_attributes": {
-          "stripe_customer_id": "{{ stripe_customer_id }}",
+          "gateway_customer_id": "{{ gateway_customer_id }}",
           "external_customer_id": "{{ external_id }}",
-          "stripe_id": "{{ response_body.id }}",
+          "gateway_id": "{{ response_body.id }}",
           "brand": "{{ response_body.brand }}",
           "exp_month": "{{ response_body.exp_month }}",
           "exp_year": "{{ response_body.exp_year }}",
@@ -87,9 +87,9 @@ default_payload: >
         "customizable_id": "{{ g_customer.id }}",
         "user_id": "{{ context.current_user.id }}",
         "properties_attributes": {
-          "stripe_customer_id": "{{ g_customer.customer.properties.stripe_id }}",
+          "gateway_customer_id": "{{ g_customer.customer.properties.gateway_id }}",
           "external_customer_id": "{{ external_id }}",
-          "stripe_id": "{{ g_customer.customer.properties.default_source }}",
+          "gateway_id": "{{ g_customer.customer.properties.default_source }}",
           "brand": "{{ g_customer.customer.properties.card_brand }}",
           "exp_month": "{{ g_customer.customer.properties.card_exp_month }}",
           "exp_year": "{{ g_customer.customer.properties.card_exp_year }}",

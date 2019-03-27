@@ -68,7 +68,7 @@ Params:
   email - Customers' email
 
 Returns Array<modules/payments/customer>:
-- stripe_id
+- gateway_id
 - email
 - default_source - ID of a default card of this user
 
@@ -93,8 +93,8 @@ Params:
   customer_id - ID of already stored customer
 
 Returns Array<modules/payments/credit_card>:
-- stripe_id
-- stripe_customer_id
+- gateway_id
+- gateway_customer_id
 - customer_id
 - brand
 - exp_month

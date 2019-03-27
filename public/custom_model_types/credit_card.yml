@@ -1,9 +1,9 @@
 ---
 name: credit_card
 properties:
-- name: stripe_id
+- name: gateway_id
   type: string
-- name: stripe_customer_id
+- name: gateway_customer_id
   type: string
 - name: customer_id
   type: string
