@@ -1,0 +1,12 @@
+---
+slug: create-customer-request
+layout_name: ''
+authorization_policies:
+---
+
+  {%-
+    include_form 'modules/payments/gateway_request_form',
+    gateway: 'stripe'
+    request_type: 'create_customer'
+    redirect_to: '/create-customer-request'
+  %}

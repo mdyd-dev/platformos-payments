@@ -15,7 +15,7 @@ authorization_policies:
 {% assign expires_in = 'now' | date: '%s' | plus: 100000 %}
 
 
-{%- assign external_id = params.properties_attributes.external_customer_id %}
+{%- assign external_id = context.params.external_customer_id %}
 {%- 
   query_graph 'modules/payments/get_customer_by_external_id',
     result_name: 'g_customer',
@@ -23,19 +23,22 @@ authorization_policies:
 -%}
 {%- assign customer = g_customer.customizations.results.first -%}
 
+
+
 {% if customer %}
-  {%
-    include_form 'modules/payments/create_credit_card_form',
-      customer_id: customer.id
-      properties: properties,
-      redirect_to: 'create-credit-card',
-      expires_in: expires_in
+  {% parse_json "data" %}
+    { "customer_id": "{{ customer.id }}"}
+  {% endparase_json %}
+  {%-
+    include_form 'modules/payments/gateway_request_form',
+    gateway: 'stripe'
+    request_type: 'create_card'
+    data: data
   %}
 {% else %}
-  {%
-    include_form 'modules/payments/create_customer_form',
-      properties: properties,
-      redirect_to: 'create-credit-card',
-      expires_in: expires_in
+  {%-
+    include_form 'modules/payments/gateway_request_form',
+    gateway: 'stripe'
+    request_type: 'create_customer'
   %}
 {% endif %}
