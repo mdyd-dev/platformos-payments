@@ -39,27 +39,4 @@ callback_actions: >
     {% endif %}
   {% endif %}
 default_payload: >
-  {% if form %}
-    {% parse_json request_data %}
-      {
-        "email": "{{ context.params.properties_attributes.email }}",
-        "description": "{{ context.params.properties_attributes.description }}",
-        "source": "{{ context.params.properties_attributes.source }}"
-      }
-    {% endparse_json %}
-    {%- assign gateway_template = "modules/payments/create_customer_in_stripe" -%}
-    {%- execute_query 'modules/payments/gateway_create_customer', result_name: 'g', data: request_data, gateway_template: gateway_template -%}
-    {% assign response_body = g.api_call_send.response.body | to_hash %}
-    {
-      "properties_attributes": {
-        "external_id": "{{ context.params.properties_attributes.external_id }}",
-        "gateway_id": "{{ response_body.id }}",
-        "default_source": "{{ response_body.default_source }}",
-        "card_brand": "{{ response_body.sources.data[0].brand }}",
-        "card_exp_month": "{{ response_body.sources.data[0].exp_month }}",
-        "card_exp_year": "{{ response_body.sources.data[0].exp_year }}",
-        "card_last4": "{{ response_body.sources.data[0].last4 }}"
-      }
-    }
-  {% endif %}
 ---

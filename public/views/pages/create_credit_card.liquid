@@ -3,6 +3,7 @@ slug: create-credit-card
 layout_name: ''
 authorization_policies:
 ---
+{% comment %}
 
 {% parse_json "properties" %}
   {
@@ -28,7 +29,7 @@ authorization_policies:
 {% if customer %}
   {% parse_json "data" %}
     { "customer_id": "{{ customer.id }}"}
-  {% endparase_json %}
+  {% endparse_json %}
   {%-
     include_form 'modules/payments/gateway_request_form',
     gateway: 'stripe'
@@ -42,3 +43,4 @@ authorization_policies:
     request_type: 'create_customer'
   %}
 {% endif %}
+{% endcomment %}

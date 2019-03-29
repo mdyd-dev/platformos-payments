@@ -45,14 +45,7 @@ default_payload: >
   {% if form %}
 
     {% if customer.id != blank %}
-      {% parse_json cc_data %}
-        {
-          "customer_id": "{{ customer.gateway_id }}",
-          "source": "{{ form.properties.token | default: params.properties_attributes.token }}"
-        }
-      {% endparse_json %}
 
-      {%- assign gateway_template = "modules/payments/stripe/create_card" -%}
       {%- execute_query 'modules/payments/gateway_create_card', result_name: 'g', data: cc_data, gateway_template: gateway_template -%}
       {%- assign credit_card = g.api_call_send.response.body | to_hash %}
       
@@ -73,7 +66,7 @@ default_payload: >
 
     {
       "customizable_type": "Customization",
-      "customizable_id": "{{ customer.id }}",
+      "customizable_id": "{{ params.properties_attributes.customer_id }}",
       "user_id": "{{ context.current_user.id }}",
       "properties_attributes": {
         "gateway_customer_id": "{{ customer.gateway_id }}",

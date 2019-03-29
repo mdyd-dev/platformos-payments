@@ -12,27 +12,27 @@ callback_actions: >
 default_payload: >
   {% if form %}
     {%- assign request = params.properties_attributes -%}
-    {%- assign gateway_api_template = "modules/payments/" | append: request.gateway | append: '/' | append: request.request_type -%}
+    {%- assign gateway_api_template = "modules/" | append: request.gateway | append: '/' | append: request.request_type -%}
     {%- assign api_query = 'modules/payments/gateway_' | append: request.request_type -%}
-    {%- execute_query api_query, result_name: 'g', data: request.data, gateway_template: gateway_api_template -%}
+    {%- execute_query api_query, result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
 
-    {% log g, type: 'apicallresult' %}
-    
-    {%- assign response_parser = "modules/payments/response_mappers/" | append: request.gateway | append: '/' | append: request.request_type -%}
+    {%- assign response_parser = "modules/" | append: request.gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- capture 'response_data' -%}
-      {% include response_parser, response: response %}
+      {%- include response_parser, gateway_response: response.api_call_send.response -%}
     {%- endcapture -%}
-    {% log response_data, type:"response_data" %}
-    
+    {% log response_data, type:"response data" %}
     {% if response_data.errors == empty %}
       {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer', data: response_data -%}
       {% log g_customer, type:"g_customer" %}
+      {
+        "response": response.api_call_send.response.data
+      }
     {% else %}
       {
-        "errors": {{ response_data.errors }}
+        "errors": {{ response_data.errors | json }}
       }
     {% endif %}
   {% endif %}
 ---
 {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
-{% include gateway_template %}
+{%- include gateway_template -%}
