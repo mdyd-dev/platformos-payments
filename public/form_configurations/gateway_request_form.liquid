@@ -22,7 +22,8 @@ default_payload: >
     {%- endparse_json -%}
     {% log response_data.properties.first.value, type: "email" %}
     {% if response_data.errors == blank or response_data.errors == empty %}
-      {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer', customer: response_data -%}
+      {% assign create_query = 'modules/payments/' | append: request.request_type %}
+      {%- execute_query create_query, customer: response_data -%}
       {
         "response": "OK"
       }
