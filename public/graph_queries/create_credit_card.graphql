@@ -1,0 +1,33 @@
+mutation create_credit_card(
+  $customer_id: ID!
+  $metadata: String
+  $gateway_id: String
+  $gateway_customer_id: String
+  $external_customer_id: String
+  $string_customer_id: String
+  $brand: String
+  $exp_month: String
+  $exp_year: String
+  $last4: String
+) {
+  card: customization_create(
+    customization: {
+      customizable_id: $customer_id
+      properties: [
+        { name: "metadata", value: $metadata }
+        { name: "gateway_id", value: $gateway_id }
+        { name: "customer_id", value: $string_customer_id }
+        { name: "gateway_customer_id", value: $gateway_customer_id }
+        { name: "external_customer_id", value: $external_customer_id }
+        { name: "brand", value: $brand }
+        { name: "exp_month", value: $exp_month }
+        { name: "exp_year", value: $exp_year }
+        { name: "last4", value: $last4 }
+      ]
+    }
+    form_configuration_name: "modules/payments/create_credit_card_form"
+  ) {
+    id
+    properties
+  }
+}

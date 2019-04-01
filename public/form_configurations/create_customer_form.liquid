@@ -24,10 +24,14 @@ fields:
     card_exp_year:
     card_last4:
 callback_actions: >
+  {% log form, type:"form" %}
   {% if form.properties.default_source != blank %}
     {% if form.properties.skip_credit_card_creation != "true" %}
-      {%- execute_query 'modules/payments/create_card', result_name: 'g_card',
+      {% log "CC START", type: "credit_card" %}
+      {% assign string_customer_id = form.id | append: '' %}
+      {%- execute_query 'modules/payments/create_credit_card', result_name: 'g_card',
         customer_id: form.id
+        string_customer_id: string_customer_id
         external_customer_id: form.properties.external_id
         gateway_customer_id: form.properties.gateway_id
         gateway_id: form.properties.default_source
@@ -36,6 +40,7 @@ callback_actions: >
         exp_year: form.properties.card_exp_year
         last4: form.properties.card_last4
       -%}
+      {% log g_card, type: "credit_card" %}
     {% endif %}
   {% endif %}
 default_payload: >

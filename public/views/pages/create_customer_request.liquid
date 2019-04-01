@@ -4,10 +4,48 @@ layout_name: ''
 authorization_policies:
 ---
 
+{%- parse_json 'data' -%}
+  {
+    "email": "test@exampe.com",
+    "description": "My Best Customer",
+    "external_id": 1
+  }
+{%- endparse_json -%}
 {%-
   include_form 'modules/payments/gateway_request_form',
   gateway: 'stripe'
   request_type: 'create_customer'
   redirect_to: '/create-customer-request'
-  data: '{}'
+  data: data
 %}
+
+{% comment %}
+{% parse_json 'data' %}
+  {
+    "user_id": "{{ context.current_user.id }}",
+    "properties": [
+      { "name": "email", "value": "test@exampe.com" },
+      { "name": "description", "value": "My Best Customer" },
+      { "name": "external_id", "value": "123" },
+      { "name": "gateway_id", "value": "cus_EnyBJLeOcERi2V" },
+      { "name": "source", "value": "card_EnyBM9ZkP9SgBp" },
+      { "name": "card_brand", "value": "Visa" },
+      { "name": "card_exp_month", "value": "11" },
+      { "name": "card_exp_year", "value": "2021" },
+      { "name": "card_last4", "value": "1111" },
+      { "name": "skip_credit_card_creation", "value": "false" }
+      ]
+   }
+  {% endparse_json %}
+
+  {{ data | json }}
+  <br />
+  <br />
+  {{ data.properties.email }}
+  <br />
+  <br />
+  {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer', customer: data -%}
+  
+  RESULT <br/>
+  {{ g_customer }}
+{% endcomment %}

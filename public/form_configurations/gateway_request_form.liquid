@@ -17,17 +17,17 @@ default_payload: >
     {%- execute_query api_query, result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
 
     {%- assign response_parser = "modules/" | append: request.gateway | append: '/response_mapper/' | append: request.request_type -%}
-    {%- capture 'response_data' -%}
-      {%- include response_parser, gateway_response: response.api_call_send.response -%}
-    {%- endcapture -%}
-    {% log response_data, type:"response data" %}
-    {% if response_data.errors == empty %}
-      {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer', data: response_data -%}
-      {% log g_customer, type:"g_customer" %}
+    {%- parse_json 'response_data' -%}
+      {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
+    {%- endparse_json -%}
+    {% log response_data.properties.first.value, type: "email" %}
+    {% if response_data.errors == blank or response_data.errors == empty %}
+      {%- execute_query 'modules/payments/create_customer', result_name: 'g_customer', customer: response_data -%}
       {
-        "response": response.api_call_send.response.data
+        "response": "OK"
       }
     {% else %}
+      {% log response_data.errors, type:"errors" %}
       {
         "errors": {{ response_data.errors | json }}
       }
