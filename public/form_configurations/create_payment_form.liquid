@@ -6,15 +6,15 @@ flash_notice: "Successfully paid!"
 flash_alert: "Payment failed!"
 configuration:
   properties:
-    charge_id:
+    gateway_id:
       validation:
-        presence: true
+        presence: false
     credit_card_id:
       validation:
-        presence: true
+        presence: false
     amount_cents:
       validation:
-        presence: true
+        presence: false
     application_fee_cents:
     currency:
     description:
@@ -22,10 +22,8 @@ configuration:
     statement_descriptor:
     customer_id:
       validation:
-        presence: true
+        presence: false
     external_customer_id:
-      validation:
-        presence: true
     customer_email:
       property_options:
         virtual: true
@@ -38,48 +36,6 @@ configuration:
     paid_at:
     failed_at:
 default_payload: >
-  {% include 'modules/payments/forms/create_payment_default_payload', form: form %}
 authorization_policies:
-  - modules/payments/validate_signature
 ---
-{% include 'modules/payments/shared/api_credentials' %}
-{% capture "signature" -%}
-{% include 'modules/payments/shared/calculate_signature', properties: payment, expires_in: expires_in, redirect_to: redirect_to %}
-{%- endcapture -%}
 
-{% form %}
-  <input type="hidden" name="signature" value="{{ signature }}" />
-  <input type="hidden" name="redirect_to" value="{{ redirect_to }}" />
-  <input type="hidden" name="expires_in" value="{{ expires_in }}" />
-
-  {% for payment_attribute in payment %}
-    <input type="text" name="{{ form_builder.fields.properties[payment_attribute.first]['name'] }}" value="{{ payment_attribute.last }}" />
-  {% endfor %}
-
-  {%- query_graph 'modules/payments/get_customer_by_external_id', result_name: 'g_customer', external_id: payment.customer_id -%}
-  {% assign customer = g_customer.customizations.results.last %}
-  {% if customer.id != blank %}
-    {%- query_graph 'modules/payments/get_credit_cards_by_customer_id', result_name: 'g_credit_card', customer_id: customer.id -%}
-    {% assign credit_card =  g_credit_card.customizations.results.last %}
-  {% endif %}
-
-  {{ form_builder.errors }}
-
-  <div class="row">
-    <div class="col-xs-12">
-      <div>Customer email: {{ customer.email }}</div>
-      <div>amount_cents: {{ payment.amount_cents }}</div>
-      <div>currency: {{ payment.currency | default: 'USD' }}</div>
-      <div>Credit card to be charged: **** **** **** {{ credit_card.properties.last4 }}</div>
-      <div>Destination: {{ payment.destination }}</div>
-      <div>Application Fee Cents: {{ payment.application_fee_cents }}</div>
-      <div>Description: {{ payment.description }}</div>
-      <div>Statement descriptor: {{ payment.statement_descriptor }}</div>
-      <div>Transfer group: {{ payment.transfer_group }}</div>
-
-      <button type="submit" class="btn btn-primary pull-left mr-5">
-        <i class="fa fa-lock"></i> Charge
-      </button>
-    </div>
-  </div>
-{% endform %}

@@ -1,6 +1,8 @@
 ---
 name: payment
 properties:
+- name: gateway_id
+  type: string
 - name: credit_card_id
   type: string
 - name: external_id

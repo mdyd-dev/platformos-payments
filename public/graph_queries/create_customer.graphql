@@ -1,8 +1,8 @@
 mutation create_customer(
-  $customer: CustomizationInputType!
+  $data: CustomizationInputType!
 ) {
   customer: customization_create(
-    customization: $customer
+    customization: $data
     form_configuration_name: "modules/payments/create_customer_form"
   ) {
     id

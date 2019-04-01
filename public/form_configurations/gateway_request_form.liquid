@@ -15,15 +15,15 @@ default_payload: >
     {%- assign gateway_api_template = "modules/" | append: request.gateway | append: '/' | append: request.request_type -%}
     {%- assign api_query = 'modules/payments/gateway_' | append: request.request_type -%}
     {%- execute_query api_query, result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
-
     {%- assign response_parser = "modules/" | append: request.gateway | append: '/response_mapper/' | append: request.request_type -%}
+
     {%- parse_json 'response_data' -%}
       {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
     {%- endparse_json -%}
-    {% log response_data.properties.first.value, type: "email" %}
+
     {% if response_data.errors == blank or response_data.errors == empty %}
-      {% assign create_query = 'modules/payments/' | append: request.request_type %}
-      {%- execute_query create_query, customer: response_data -%}
+      {%- assign create_query = 'modules/payments/' | append: request.request_type -%}
+      {%- execute_query create_query, data: response_data -%}
       {
         "response": "OK"
       }

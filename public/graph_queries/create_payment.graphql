@@ -1,31 +1,9 @@
 mutation create_payment(
-  $customer_id: String!,
-  $external_id: String!,
-  $external_customer_id: String!,
-  $amount_cents: String!,
-  $destination: String,
-  $currency: String!,
-  $application_fee_cents: String,
-  $description: String,
-  $statement_descriptor: String,
-  $transfer_group: String
+  $data: CustomizationInputType!
 ) {
-  payment: customization_create(
-    customization: {
-      properties: [
-        { name: "customer_id", value: $customer_id }
-        { name: "external_id", value: $external_id }
-        { name: "external_customer_id", value: $external_customer_id }
-        { name: "amount_cents", value: $amount_cents }
-        { name: "destination", value: $destination }
-        { name: "currency", value: $currency }
-        { name: "application_fee_cents", value: $application_fee_cents }
-        { name: "description", value: $description }
-        { name: "statement_descriptor", value: $statement_descriptor }
-        { name: "transfer_group", value: $transfer_group }
-      ]
-    }
-    form_configuration_name: "modules/payments/api_create_payment_form"
+  customer: customization_create(
+    customization: $data
+    form_configuration_name: "modules/payments/create_payment_form"
   ) {
     id
     properties
