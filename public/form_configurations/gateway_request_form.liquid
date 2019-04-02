@@ -25,10 +25,12 @@ default_payload: >
       {%- assign create_query = 'modules/payments/' | append: request.request_type -%}
       {%- execute_query create_query, data: response_data -%}
       {
-        "response": "OK"
+        "properties_attributes": {
+          "response": "OK"
+        }
       }
     {% else %}
-      {% log response_data.errors, type:"errors" %}
+      {% log response_data.errors, type: "errors" %}
       {
         "errors": {{ response_data.errors | json }}
       }
@@ -36,4 +38,4 @@ default_payload: >
   {% endif %}
 ---
 {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
-{%- include gateway_template -%}
+{%- include gateway_template, config: config -%}

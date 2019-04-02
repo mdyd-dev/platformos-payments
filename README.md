@@ -19,6 +19,7 @@ A module for processing payments in PlatformOS.
  - [ ] automated payouts
  - [ ] manual payouts
  - [ ] grapph queries to fetch all defined modules
+ - [ ] proper error handling
 
 ## Installation
 
@@ -65,11 +66,19 @@ The easiest way to enable payment creation on your page is by simply embeding th
   }
 {%- endparse_json -%}
 
+{%- parse_json 'config' -%}
+  {
+    "button": "Pay Now",
+    "require_zip": "true",
+    "redirect_to": "/payments"
+  }
+{%- endparse_json -%}
+
 {%-
   include_form 'modules/payments/gateway_request_form',
-  gateway: 'stripe'
-  request_type: 'create_payment'
-  redirect_to: '/payments'
+  gateway: 'stripe',
+  request_type: 'create_payment',
+  config: config,
   data: data
 %}
 ```
@@ -92,21 +101,9 @@ Additinal Data object properties
 - email - email of the customer that is being charged
 
 
-- modules/payments/customer
-- modules/payments/credit_card
-- modules/payments/charge
-
 ## Creating a customer
 
-To create a customer in Stripe and store a Credit/Debit card, without charging user, you can use following mutation:
-
-```
-{%- execute_query 'modules/payments/create_customer', result_name: 'g_customer',
-  email: 'some@example.com', #customer email
-  source: 'tok_XXXX', #a token representing a card returned by Stripe from Checkout JS form
-  description: 'optional description'
--%}
-```
+TBD
 
 ## Retrieving stored customer by email address
 
