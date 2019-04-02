@@ -1,0 +1,11 @@
+mutation gateway_create_payment($gateway_template: String!, $data: HashObject) {
+  api_call_send(
+    data: $data
+    template: { name: $gateway_template }
+  ) {
+    response{ status body }
+    errors {
+      message
+    }
+  }
+}
