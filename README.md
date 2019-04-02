@@ -5,7 +5,7 @@ A module for processing payments in PlatformOS.
 ## List of features
  - [x] create charge with form
  - [ ] create charge with mutation
- - [x] create custoer with form
+ - [x] create customer with form
  - [x] module configuration with template-values
  - [ ] create customer with mutation
  - [ ] create credit card with form
