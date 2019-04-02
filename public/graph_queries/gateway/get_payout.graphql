@@ -1,0 +1,11 @@
+mutation gateway_get_payout_from_stripe ($data: HashObject) {
+  api_call_send(
+    data: $data
+    template: { name: "modules/payments/get_payout_from_stripe" }
+  ) {
+    response{ status body }
+    errors {
+      message
+    }
+  }
+}

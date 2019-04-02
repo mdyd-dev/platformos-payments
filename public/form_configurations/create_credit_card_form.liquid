@@ -1,0 +1,46 @@
+---
+name: create_credit_card_form
+resource: modules/payments/credit_card
+resource_owner: anyone
+redirect_to: "{{ context.params.redirect_to }}"
+fields:
+  customizable_type:
+  customizable_id:
+  properties:
+    customer_email:
+      property_options:
+        virtual: true
+    token:
+      property_options:
+        virtual: true
+    metadata:
+      property_options:
+        virtual: true
+    gateway_customer_id:
+      validation:
+        presence: true
+    customer_id:
+      validation:
+        presence: true
+    external_customer_id:
+      validation:
+        presence: true
+    gateway_id:
+      validation:
+        presence: true
+    brand:
+      validation:
+        presence: true
+    exp_month:
+      validation:
+        presence: true
+    exp_year:
+      validation:
+        presence: true
+    last4:
+      validation:
+        presence: true
+callback_actions:
+default_payload: ""
+authorization_policies:
+---

@@ -1,0 +1,41 @@
+---
+name: create_payment_form
+resource: modules/payments/payment
+resource_owner: anyone
+flash_notice: "Successfully paid!"
+flash_alert: "Payment failed!"
+configuration:
+  properties:
+    gateway_id:
+      validation:
+        presence: true
+    credit_card_id:
+      validation:
+        presence: false
+    amount_cents:
+      validation:
+        presence: true
+    application_fee_cents:
+    currency:
+    description:
+    external_id:
+    statement_descriptor:
+    customer_id:
+      validation:
+        presence: false
+    external_customer_id:
+    customer_email:
+      property_options:
+        virtual: true
+    destination:
+    transfer_group:
+    response_errors:
+      validation:
+        absence: true
+    status:
+    paid_at:
+    failed_at:
+default_payload: >
+authorization_policies:
+---
+

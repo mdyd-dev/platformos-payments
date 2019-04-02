@@ -1,0 +1,47 @@
+---
+name: create_customer_form
+resource: modules/payments/customer
+resource_owner: anyone
+fields:
+  properties:
+    email:
+    default_source:
+    description:
+      property_options:
+        virtual: true
+    gateway_id:
+      validation:
+        presence: true
+    external_id:
+    source:
+      property_options:
+        virtual: true
+    skip_credit_card_creation:
+      property_options:
+        virtual: true
+    card_brand:
+    card_exp_month:
+    card_exp_year:
+    card_last4:
+callback_actions: >
+  {% log form, type:"form" %}
+  {% if form.properties.default_source != blank %}
+    {% if form.properties.skip_credit_card_creation != "true" %}
+      {% log "CC START", type: "credit_card" %}
+      {% assign string_customer_id = form.id | append: '' %}
+      {%- execute_query 'modules/payments/create_credit_card', result_name: 'g_card',
+        customer_id: form.id
+        string_customer_id: string_customer_id
+        external_customer_id: form.properties.external_id
+        gateway_customer_id: form.properties.gateway_id
+        gateway_id: form.properties.default_source
+        brand: form.properties.card_brand
+        exp_month: form.properties.card_exp_month
+        exp_year: form.properties.card_exp_year
+        last4: form.properties.card_last4
+      -%}
+      {% log g_card, type: "credit_card" %}
+    {% endif %}
+  {% endif %}
+default_payload: >
+---

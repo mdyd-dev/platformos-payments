@@ -1,25 +1,46 @@
 ---
 slug: create-credit-card
 layout_name: ''
-authorization_policies: 
-  - modules/stripe_payments/hmac_validation
+authorization_policies:
 ---
-{% if context.params.customer_email contains '+' %}
-  Email which includes + is invalid. Please provide different email. <a href="{{ context.params.redirect_to }}">Go back</a>
-{% else %}
-  {% parse_json "properties" %}
-    {
-      "customer_id": "{{ context.params.customer_id }}",
-      "external_customer_id": "{{ context.params.customer_id }}",
-      "customer_email": "{{ context.params.customer_email }}",
-      "metadata": "{{ context.params.metadata | json }}"
-    }
-  {% endparse_json %}
+{% comment %}
 
-  {% 
-    include_form 'modules/stripe_payments/create_card_form',
-    properties: properties,
-    redirect_to: context.params.redirect_to,
-    expires_in: context.params.expires_in
+{% parse_json "properties" %}
+  {
+    "customer_id": "100",
+    "external_customer_id": "101",
+    "customer_email": "example@platform-os.com",
+    "metadata": "{{ context.params.metadata | json }}"
+  }
+{% endparse_json %}
+{% assign expires_in = 'now' | date: '%s' | plus: 100000 %}
+
+
+{%- assign external_id = context.params.external_customer_id %}
+{%- 
+  query_graph 'modules/payments/get_customer_by_external_id',
+    result_name: 'g_customer',
+    external_id: external_id
+-%}
+{%- assign customer = g_customer.customizations.results.first -%}
+
+
+
+{% if customer %}
+  {% parse_json "data" %}
+    { "customer_id": "{{ customer.id }}"}
+  {% endparse_json %}
+  {%-
+    include_form 'modules/payments/gateway_request_form',
+    gateway: 'stripe'
+    request_type: 'create_card'
+    data: data
+  %}
+{% else %}
+  {%-
+    include_form 'modules/payments/gateway_request_form',
+    gateway: 'stripe'
+    request_type: 'create_customer'
   %}
 {% endif %}
+{% endcomment %}

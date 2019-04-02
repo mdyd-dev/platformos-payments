@@ -1,0 +1,20 @@
+---
+name: credit_card
+properties:
+- name: gateway_id
+  type: string
+- name: gateway_customer_id
+  type: string
+- name: customer_id
+  type: string
+- name: external_customer_id
+  type: string
+- name: brand
+  type: string
+- name: exp_month
+  type: integer
+- name: exp_year
+  type: integer
+- name: last4
+  type: string
+

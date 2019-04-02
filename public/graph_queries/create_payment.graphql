@@ -1,0 +1,11 @@
+mutation create_payment(
+  $data: CustomizationInputType!
+) {
+  customer: customization_create(
+    customization: $data
+    form_configuration_name: "modules/payments/create_payment_form"
+  ) {
+    id
+    properties
+  }
+}

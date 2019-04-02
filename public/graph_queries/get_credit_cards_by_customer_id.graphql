@@ -1,0 +1,20 @@
+query get_credit_cards_by_customer_id($customer_id: String!, $gateway_id: String, $id: ID) {
+  customizations(
+    per_page: 20
+    id: $id
+    name: "modules/payments/credit_card"
+    is_deleted: false
+    properties: [
+      { name: "gateway_id", value: $gateway_id }
+      { name: "customer_id", value: $customer_id }
+    ]
+    sort: {
+      name: "created_at", order: "DESC"
+    }
+  ) {
+    results {
+      id
+      properties
+    }
+  }
+}

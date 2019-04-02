@@ -5,4 +5,5 @@
     {%- assign key = key | append: '|' | append: property.last -%}
   {%- endif -%}
 {%- endfor -%}
-{{- key | compute_hmac: context.constants.partner_portal_secret -}}
+{% log key, type:"key" %}
+{{- key | compute_hmac: context.constants.payment_secret -}}

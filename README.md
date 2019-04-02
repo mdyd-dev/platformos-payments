@@ -11,7 +11,7 @@ To start using module please set up your credentials in a file: `public/views/pa
 A charge will result in charging money from a given card, and creating a customer and a given card for future use.
 
 ```
-{%- execute_query 'modules/stripe_payments/create_charge', result_name: 'g',
+{%- execute_query 'modules/payments/create_charge', result_name: 'g',
   credit_card_id: "123"
   credit_card_token: "tok_XXXX"
   currency: "USD"
@@ -39,16 +39,16 @@ Where:
 - customer_email - email of the customer that is being charged
 
 This mutation will create 3 models:
-- modules/stripe_payments/customer
-- modules/stripe_payments/credit_card
-- modules/stripe_payments/charge
+- modules/payments/customer
+- modules/payments/credit_card
+- modules/payments/charge
 
 ## Creating a customer
 
 To create a customer in Stripe and store a Credit/Debit card, without charging user, you can use following mutation:
 
 ```
-{%- execute_query 'modules/stripe_payments/create_customer', result_name: 'g_customer',
+{%- execute_query 'modules/payments/create_customer', result_name: 'g_customer',
   email: 'some@example.com', #customer email
   source: 'tok_XXXX', #a token representing a card returned by Stripe from Checkout JS form
   description: 'optional description'
@@ -60,15 +60,15 @@ To create a customer in Stripe and store a Credit/Debit card, without charging u
 To retrieve stored customer:
 
 ```
-{%- query_graph 'modules/stripe_payments/get_customer_by_email', result_name: 'g_customer',
+{%- query_graph 'modules/payments/get_customer_by_email', result_name: 'g_customer',
   email: "some@example.com"
 -%}
 ```
 Params:
   email - Customers' email
 
-Returns Array<modules/stripe_payments/customer>:
-- stripe_id
+Returns Array<modules/payments/customer>:
+- gateway_id
 - email
 - default_source - ID of a default card of this user
 
@@ -77,7 +77,7 @@ Returns Array<modules/stripe_payments/customer>:
 To retrieve references to stored cards in stripe you can use:
 
 ```
-{%- query_graph 'modules/stripe_payments/get_credit_cards_by_customer_id', result_name: 'g_cards',
+{%- query_graph 'modules/payments/get_credit_cards_by_customer_id', result_name: 'g_cards',
   customer_id: customer_id
 -%}
 ```
@@ -85,16 +85,16 @@ To retrieve references to stored cards in stripe you can use:
 Or you can fetch credit cards with Stripe Customer ID (external_customer_id)
 
 ```
-{%- query_graph 'modules/stripe_payments/get_credit_cards_by_external_customer_id', result_name: 'g_cards',
+{%- query_graph 'modules/payments/get_credit_cards_by_external_customer_id', result_name: 'g_cards',
   external_customer_id: external_customer_id
 -%}
 ```
 Params:
   customer_id - ID of already stored customer
 
-Returns Array<modules/stripe_payments/credit_card>:
-- stripe_id
-- stripe_customer_id
+Returns Array<modules/payments/credit_card>:
+- gateway_id
+- gateway_customer_id
 - customer_id
 - brand
 - exp_month

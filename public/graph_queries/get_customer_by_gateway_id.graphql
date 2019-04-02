@@ -1,0 +1,20 @@
+query get_customer_by_gateway_id($gateway_customer_id: String!) {
+  customizations(
+    per_page: 1
+    name: "modules/payments/customer"
+    is_deleted: false
+    properties: [
+      { name: "gateway_id", value: $gateway_customer_id }
+    ]
+    sort: {
+      name: "created_at", order: "DESC"
+      }
+  ) {
+    results {
+      id
+      gateway_id: property(name: "gateway_id")
+      email: property(name: "email")
+      name: property(name: "name")
+    }
+  }
+}
