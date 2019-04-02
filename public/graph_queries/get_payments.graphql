@@ -1,0 +1,19 @@
+query get_payments($per_page: Int = 10, $page: Int = 1) {
+  payments: customizations(
+    per_page: $per_page
+    page: $page
+    name: "modules/payments/payment"
+    is_deleted: false
+    sort: {
+      name: "created_at", order: "DESC"
+    }
+  ) {
+    results {
+      id
+      properties
+      user {
+        name
+      }
+    }
+  }
+}
