@@ -8,15 +8,17 @@ authorization_policies:
   {
     "email": "test21323@gmail.com",
     "description": "My Best Customer",
-    "external_id": 2,
-    "label": "Store Credit Card"
+    "external_id": 2
   }
 {%- endparse_json -%}
+
 {%-
   include_form 'modules/payments/gateway_request_form',
   gateway: 'stripe'
   request_type: 'create_customer'
-  redirect_to: '/create-customer-request'
+  redirect_to: '/create-customer-request',
+  label: "Store Credit Card",
+  button: "Add new Credit Card",
   data: data
 %}
 
