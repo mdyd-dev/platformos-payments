@@ -26,7 +26,7 @@ A module for processing payments in PlatformOS.
 PlatformOS Payment module is designed to work with multipl Payment provides. For to moment the main supported Payment Gateway is [Stripe](https://stripe.com) and it comes with separated module that needs to be installed, simply follow the steps bellow for quick installation.
 
 ### Installation with Partner Portal
-1. Go to [modules marketplace](https://portal.apps.near-me.com/module_marketplace) and click on "Buy" next to "PlatformOS Payments" and "PlatformOS Payments Stripe" modules.
+1. Go to [modules marketplace](https://portal.apps.near-me.com/module_marketplace) and click on "Buy" (It's FREE) next to "PlatformOS Payments" and "PlatformOS Payments Stripe" modules.
 2. Go to your Instance view and install both modules
 3. In the installation process set up Stripe public and secret keys
 4. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
