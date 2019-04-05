@@ -3,27 +3,36 @@ name: gateway_request_form
 resource: modules/payments/gateway_request
 resource_owner: anyone
 fields:
+  success_message:
+    property_options:
+      virtual: true
   properties:
     request_type:
     gateway:
     data:
     response:
+    request_errors:
+flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.request_errors }}{% else %}{{ form.success_message }}{% endif %}"
 callback_actions: >
 default_payload: >
   {% if form %}
     {%- assign request = params.properties_attributes -%}
-    {%- assign gateway_api_template = "modules/" | append: request.gateway | append: '/' | append: request.request_type -%}
+    {%- assign gateway = request.gateway | default: context.exports.payments.gateway_name -%}
+    {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request.request_type -%}
     {%- assign api_query = 'modules/payments/gateway_' | append: request.request_type -%}
     {%- execute_query api_query, result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
-    {%- assign response_parser = "modules/" | append: request.gateway | append: '/response_mapper/' | append: request.request_type -%}
-
+    {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- parse_json 'response_data' -%}
       {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
     {%- endparse_json -%}
 
     {% if response_data.errors == blank or response_data.errors == empty %}
-      {%- assign create_query = 'modules/payments/' | append: request.request_type -%}
-      {%- execute_query create_query, data: response_data -%}
+      {%- assign data_mutation_name = 'modules/payments/' | append: request.request_type -%}
+      {% if data_mutation_name contains 'delete' %} 
+        {%- execute_query data_mutation_name, id: response_data.id -%}
+      {% else %}
+        {%- execute_query data_mutation_name, data: response_data -%}
+      {% endif %}
       {
         "properties_attributes": {
           "response": "OK"
@@ -32,10 +41,13 @@ default_payload: >
     {% else %}
       {% log response_data.errors, type: "errors" %}
       {
-        "errors": {{ response_data.errors | json }}
+        "properties_attributes": {
+          "request_errors": {{ response_data.errors | json }}
+         }
       }
     {% endif %}
   {% endif %}
 ---
+{%- assign gateway = context.exports.payments.gateway_name -%}
 {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
 {%- include gateway_template, config: config -%}

@@ -1,0 +1,29 @@
+
+{% query_graph 'modules/payments/get_credit_card_by_id', result_name: "cc", id: id %}
+{% assign credit_card = cc.customizations.results.first %}
+{% query_graph 'modules/payments/get_customer', result_name: "cu", id: credit_card.properties.customer_id %}
+{% assign customer = cu.customizations.results.first %}
+
+{%- parse_json 'data' -%}
+  {
+    "id": "{{ credit_card.id }}",
+    "customer_id": "{{ customer.gateway_id }}",
+    "gateway_id": "{{ credit_card.properties.gateway_id }}"
+  }
+{%- endparse_json -%}
+
+{%- parse_json 'config' -%}
+  {
+    "button": "Delete",
+    "label": "Save",
+    "redirect_to": "{{ redirect_to | default: context.location.href }}"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  request_type: 'delete_credit_card'
+  config: config
+  data: data
+%}
+

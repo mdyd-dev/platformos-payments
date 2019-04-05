@@ -3,7 +3,6 @@ mutation destroy_card(
 ) {
   customization_delete(
     id: $id
-    form_configuration_name: "modules/payments/destroy_card_form"
   ) {
     id
     properties

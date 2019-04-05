@@ -9,4 +9,6 @@ properties:
   type: string
 - name: response
   type: string
+- name: request_errors
+  type: string
 
