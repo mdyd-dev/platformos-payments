@@ -1,8 +1,10 @@
-mutation destroy_card(
+mutation delete_customization(
   $id: ID!
+  $form: String
 ) {
   customization_delete(
     id: $id
+    form_configuration_name: $form
   ) {
     id
     properties

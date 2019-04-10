@@ -8,7 +8,7 @@ authorization_policies:
 {% parse_json "properties" %}
   {
     "customer_id": "100",
-    "external_customer_id": "101",
+    "external_id": "101",
     "customer_email": "example@platform-os.com",
     "metadata": "{{ context.params.metadata | json }}"
   }
@@ -16,7 +16,7 @@ authorization_policies:
 {% assign expires_in = 'now' | date: '%s' | plus: 100000 %}
 
 
-{%- assign external_id = context.params.external_customer_id %}
+{%- assign external_id = context.params.external_id %}
 {%- 
   query_graph 'modules/payments/get_customer_by_external_id',
     result_name: 'g_customer',

@@ -19,20 +19,29 @@ default_payload: >
     {%- assign request = params.properties_attributes -%}
     {%- assign gateway = request.gateway | default: context.exports.payments.gateway_name -%}
     {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request.request_type -%}
-    {%- assign api_query = 'modules/payments/gateway_' | append: request.request_type -%}
-    {%- execute_query api_query, result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
+
+    {%- execute_query 'modules/payments/gateway_create', result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
     {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- parse_json 'response_data' -%}
       {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
     {%- endparse_json -%}
 
     {% if response_data.errors == blank or response_data.errors == empty %}
-      {%- assign data_mutation_name = 'modules/payments/' | append: request.request_type -%}
-      {% if data_mutation_name contains 'delete' %} 
-        {%- execute_query data_mutation_name, id: response_data.id -%}
+      {%- assign form_name = 'modules/payments/' | append: request.request_type | append: '_form' -%}
+      {% if request.request_type contains 'delete' %}
+        {%- execute_query "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
+        {%- assign customization = g %}
       {% else %}
-        {%- execute_query data_mutation_name, data: response_data -%}
+        {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
+        {%- assign customization = g %}
       {% endif %}
+
+      {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: request.request_type -%}
+      {%- query_graph 'modules/payments/find_partial', path: callback_name -%}
+      {% if g.admin_liquid_partials.results.first.id %}
+        {%- include callback_name, response: response_data, customization: customization -%}
+      {% endif %}
+
       {
         "properties_attributes": {
           "response": "OK"

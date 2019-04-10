@@ -27,19 +27,30 @@ callback_actions: >
   {% log form, type:"form" %}
   {% if form.properties.default_source != blank %}
     {% if form.properties.skip_credit_card_creation != "true" %}
-      {% log "CC START", type: "credit_card" %}
-      {% assign string_customer_id = form.id | append: '' %}
-      {%- execute_query 'modules/payments/create_credit_card', result_name: 'g_card',
-        customer_id: form.id
-        string_customer_id: string_customer_id
-        external_customer_id: form.properties.external_id
-        gateway_customer_id: form.properties.gateway_id
-        gateway_id: form.properties.default_source
-        brand: form.properties.card_brand
-        exp_month: form.properties.card_exp_month
-        exp_year: form.properties.card_exp_year
-        last4: form.properties.card_last4
+      {% comment %}  TODO move to Stripe module  {% endcomment %}
+      {% parse_json 'data' %}
+        {
+          "properties": [
+            { "name": "customer_id", "value": "{{ form.id }}" },
+            { "name": "external_id", "value": "{{ form.properties.external_id }}" },
+            { "name": "gateway_id", "value": "{{  form.properties.default_source }}" },
+            { "name": "gateway_customer_id", "value": "{{  form.properties.gateway_id }}" },
+            { "name": "email", "value": "{{ form.properties.email }}" },
+            { "name": "description", "value": "{{ form.properties.description }}" },
+            { "name": "brand", "value": "{{ form.properties.card_brand }}" },
+            { "name": "exp_month", "value": "{{ form.properties.card_exp_month }}" },
+            { "name": "exp_year", "value": "{{ form.properties.card_exp_year }}" },
+            { "name": "last4", "value": "{{ form.properties.card_last4 }}" },
+            { "name": "skip_credit_card_creation", "value": "false" }
+          ]
+        }
+      {% endparse_json %}
+      {% log data.properties, type:"DATA" %}
+
+      {%- execute_query 'modules/payments/create_customization', result_name: 'g_card',
+        data: data, form: 'modules/payments/create_credit_card_form'
       -%}
+
       {% log g_card, type: "credit_card" %}
     {% endif %}
   {% endif %}

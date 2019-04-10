@@ -9,7 +9,7 @@ authorization_policies:
 {%- execute_query 'modules/payments/create_payment', result_name: 'g_payment',
   customer_id: context.params.customer_id,
   external_id: external_id,
-  external_customer_id: context.params.customer_id,
+  external_id: context.params.customer_id,
   amount_cents: context.params.amount_cents,
   destination: context.params.destination,
   currency: context.params.currency,

@@ -19,7 +19,7 @@ properties:
   type: string
 - name: customer_id
   type: string
-- name: external_customer_id
+- name: external_id
   type: string
 - name: destination
   type: string

@@ -132,11 +132,11 @@ To retrieve references to stored cards in stripe you can use:
 -%}
 ```
 
-Or you can fetch credit cards with Stripe Customer ID (external_customer_id)
+Or you can fetch credit cards with Stripe Customer ID (external_id)
 
 ```
-{%- query_graph 'modules/payments/get_credit_cards_by_external_customer_id', result_name: 'g_cards',
-  external_customer_id: external_customer_id
+{%- query_graph 'modules/payments/get_credit_cards_by_external_id', result_name: 'g_cards',
+  external_id: external_id
 -%}
 ```
 Params:

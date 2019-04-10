@@ -1,0 +1,18 @@
+---
+name: create_account_form
+resource: modules/payments/account
+resource_owner: anyone
+fields:
+  user_id:
+    validation:
+      presence: true
+  properties:
+    gateway_id:
+      validation:
+        presence: true
+    external_id:
+      validation:
+        presence: true
+callback_actions: >
+default_payload: >
+---

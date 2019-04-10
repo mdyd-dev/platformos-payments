@@ -1,0 +1,8 @@
+query find_partial($path: String) {
+  admin_liquid_partials(filter: { path: { exact: $path}  }) {
+    results {
+      id
+      path
+    }
+  }
+}
