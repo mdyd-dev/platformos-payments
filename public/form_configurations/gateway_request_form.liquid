@@ -30,16 +30,16 @@ default_payload: >
       {%- assign form_name = 'modules/payments/' | append: request.request_type | append: '_form' -%}
       {% if request.request_type contains 'delete' %}
         {%- execute_query "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
-        {%- assign customization = g %}
+        {%- assign customization = g.customization_delete %}
       {% else %}
         {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
-        {%- assign customization = g %}
+        {%- assign customization = g.customization_create %}
       {% endif %}
 
       {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: request.request_type -%}
       {%- query_graph 'modules/payments/find_partial', path: callback_name -%}
       {% if g.admin_liquid_partials.results.first.id %}
-        {%- include callback_name, response: response_data, customization: customization -%}
+        {%- include callback_name, response: response_data, customization: customization, params: params -%}
       {% endif %}
 
       {
