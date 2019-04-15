@@ -31,6 +31,9 @@ default_payload: >
       {% if request.request_type contains 'delete' %}
         {%- execute_query "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
         {%- assign customization = g.customization_delete %}
+      {% elsif requiest.data.id != blank %}
+        {%- execute_query "modules/payments/update_customization", form: form_name, data: response_data, id: request.data.id -%}
+        {%- assign customization = g.customization_update %}
       {% else %}
         {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
         {%- assign customization = g.customization_create %}
