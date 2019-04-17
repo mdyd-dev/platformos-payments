@@ -13,6 +13,7 @@ query get_payments($per_page: Int = 10, $page: Int = 1) {
       properties
       user {
         name
+        email
       }
     }
   }
