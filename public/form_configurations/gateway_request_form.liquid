@@ -33,8 +33,8 @@ default_payload: >
         {% log g, type: "DEBUG DELETE" %}
         {% log form_name, type: "Form Name" %}
         {%- assign customization = g.customization_delete %}
-      {% elsif request.data.id != blank %}
-        {%- execute_query "modules/payments/update_customization", form: form_name, data: response_data, id: request.data.id -%}
+      {% elsif response_data.id != blank %}
+        {%- execute_query "modules/payments/update_customization", form: form_name, data: response_data, id: response_data.id -%}
         {%- assign customization = g.customization_update %}
         {% log g, type: "DEBUG UPDATE" %}
       {% else %}
