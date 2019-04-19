@@ -1,0 +1,24 @@
+{% query_graph 'modules/payments/get_accounts', result_name: "aa", id: id %}
+{% assign account = aa.customizations.results.first %}
+
+{%- parse_json 'data' -%}
+  {
+    "id": "{{ account.id }}",
+    "gateway_id": "{{ account.properties.gateway_id }}"
+  }
+{%- endparse_json -%}
+
+{%- parse_json 'config' -%}
+  {
+    "button": "Delete",
+    "redirect_to": "{{ redirect_to | default: context.location.href }}"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  request_type: 'delete_account'
+  config: config
+  data: data
+%}
+
