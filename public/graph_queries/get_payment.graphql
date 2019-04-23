@@ -1,0 +1,14 @@
+query get_payment($id: ID!) {
+  customizations(
+    per_page: 1
+    name: "modules/payments/payment"
+    is_deleted: false
+    id:  $id
+  ) {
+    results {
+      id
+      gateway_id: property(name: "gateway_id")
+      properties
+    }
+  }
+}

@@ -1,0 +1,37 @@
+---
+name: create_refund_form
+resource: modules/payments/refund
+resource_owner: anyone
+flash_notice: "Refunded successfully!"
+flash_alert: "Refund failed!"
+configuration:
+  properties:
+    gateway_id:
+      validation:
+        presence: true
+    amount_cents:
+      validation:
+        presence: true
+    payment_id:
+      validation:
+        presence: true
+    state:
+      validation:
+        presence: true
+    currency:
+      validation:
+        presence: true
+default_payload: >
+callback_actions: >
+  {% log form, type: "FORM" %}
+  {% parse_json "data" %}
+  { "properties": [
+      {"name": "state", "value": "refunded" } 
+  ]}
+  {% endparse_json %}
+  {% graphql g = "modules/payments/update_customization", form: 'modules/payments/payment_form', data: data, id: form.properties.payment_id  %}
+  {% log g, type: "payment update" %}
+  
+authorization_policies:
+---
+

@@ -1,0 +1,15 @@
+---
+name: refund
+properties:
+- name: gateway_id
+  type: string
+- name: payment_id
+  type: string
+- name: state
+  type: string
+- name: amount_cents
+  type: integer
+- name: currency
+  type: string
+- name: state
+  type: string

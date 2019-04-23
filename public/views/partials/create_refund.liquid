@@ -1,0 +1,23 @@
+{%- parse_json 'data' -%}
+  {
+    "charge" : "{{ payment.properties.gateway_id }}",
+    "payment_id": "{{ payment.id }}",
+    "amount_cents": "{{ payment.properties.amount_cents }}",
+    "currency": "{{ payment.properties.currency }}"
+  }
+{%- endparse_json -%}
+
+{%- parse_json 'config' -%}
+  {
+    "button": "Refund {{ data.amount_cents | pricify_cents: data.currency }}",
+    "redirect_to": "{{ redirect_to | default: context.location.href }}"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  request_type: 'create_refund'
+  config: config
+  data: data
+%}
+
