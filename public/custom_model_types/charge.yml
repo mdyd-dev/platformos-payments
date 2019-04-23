@@ -33,6 +33,6 @@ properties:
   type: string
 - name: balance_transaction
   type: string
-- name: status
+- name: state
   type: string
 

@@ -21,7 +21,7 @@
       "charge_id": "{{ g.charge.id }}",
       {% if g.charge.properties.paid_at != blank %}
         "paid_at": "{{ g.charge.properties.paid_at }}",
-        "status": "{{ g.charge.properties.status }}",
+        "state": "{{ g.charge.properties.state }}",
         "failed_at": ""
       {% else %}
         {% assign now = 'now' | to_time | strftime: "%d-%m-%Y %H:%M:%S" %}

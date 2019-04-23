@@ -1,15 +1,13 @@
 ---
 name: validate_signature
-redirect_to: "/unauthorized"
+redirect_to: context.location.href
+flash_alert: Provided properties can not be modified.
 ---
 {%- capture "signature" -%}
-  {% include 'modules/payments/shared/calculate_signature', properties: context.params.form.properties_attributes, expires_in: context.params.expires_in, redirect_to: context.params.redirect_to %}
+{% include 'modules/payments/shared/calculate_signature',
+  data: context.params.form.properties_attributes.data, 
+  redirect_to: context.params.redirect_to,
+  signature_properties: context.params.form.signature_properties 
+%}
 {%- endcapture -%}
-{% assign expires_in = context.params.expires_in | to_time %}
-{% assign now = "now" | to_time %}
-{% assign expires_in_minus_now = now | time_diff: expires_in %}
-{% log expires_in_minus_now, type:"expires in min" %}
-{% log signature, type:"signature" %}
-{% log context.params.signature, type:"params signature" %}
-{% log context.params.form.properties_attributes, type:"properties" %}
-{% if context.params.signature == signature and expires_in_minus_now > 0 %}true{% endif %}
+{% if signature != blank and context.params.signature == signature %}true{% endif %}

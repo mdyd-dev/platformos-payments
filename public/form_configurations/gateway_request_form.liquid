@@ -2,8 +2,13 @@
 name: gateway_request_form
 resource: modules/payments/gateway_request
 resource_owner: anyone
+authorization_policies:
+- modules/payments/validate_signature
 fields:
   success_message:
+    property_options:
+      virtual: true
+  signature_properties:
     property_options:
       virtual: true
   properties:
@@ -20,7 +25,8 @@ default_payload: >
     {%- assign gateway = request.gateway | default: context.exports.payments.gateway_name -%}
     {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request.request_type -%}
 
-    {%- execute_query 'modules/payments/gateway_create', result_name: 'response', data: request.data, gateway_template: gateway_api_template -%}
+    {%- graphql response = 'modules/payments/gateway_create', data: request.data, gateway_template: gateway_api_template -%}
+    {% log response, type: "RESPONSE" %}
     {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- parse_json 'response_data' -%}
       {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
@@ -38,6 +44,8 @@ default_payload: >
         {%- assign customization = g.customization_update %}
         {% log g, type: "DEBUG UPDATE" %}
       {% else %}
+        {% log response_data, type: "??????" %}
+        {% log response_parser, type: "??????" %}
         {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
         {%- assign customization = g.customization_create %}
         {% log g, type: "DEBUG CREATE" %}
@@ -66,4 +74,31 @@ default_payload: >
 ---
 {%- assign gateway = context.exports.payments.gateway_name -%}
 {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
-{%- include gateway_template, config: config -%}
+{%- assign data_attribute = form_builder.fields.properties.data.name -%}
+{%- assign redirect_to = config.redirect_to | default: context.location.href -%}
+{%- include 'modules/stripe/shared/api_credentials' -%}
+{%- capture "signature" -%}
+{% include 'modules/payments/shared/calculate_signature',
+  data: data,
+  redirect_to: redirect_to
+%}
+{%- endcapture -%}
+
+{% form html-class: @request_type %}
+  <input type="hidden" name="redirect_to" value="{{ redirect_to }}" />
+  <input type="hidden" name="signature" value="{{ signature }}" />
+  <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
+  <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
+  {%- for property in data -%}
+    <input type="hidden"
+      name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
+    <input
+      type="hidden"
+      name="{{ data_attribute}}[{{property.first }}]"
+      value="{{ property.last }}"
+      data-{{ property.first }}="{{ property.last }}"
+    />
+  {%- endfor -%}
+
+  {%- include gateway_template, config: config -%}
+{% endform %}

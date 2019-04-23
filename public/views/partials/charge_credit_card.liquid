@@ -5,6 +5,7 @@
 
 {%- parse_json 'data' -%}
   {
+    "id": "{{ credit_card.id }}",
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
     "amount": {{ amount }},

@@ -31,7 +31,7 @@ properties:
   type: datetime
 - name: response_errors
   type: string
-- name: status
+- name: state
   type: string
 - name: charge_id
   type: string
