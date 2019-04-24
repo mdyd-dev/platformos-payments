@@ -1,0 +1,18 @@
+---
+slug: payments/webhooks
+method: post
+layout_name: ''
+authorization_policies:
+---
+{% assign stripe_signature = context.headers.HTTP_STRIPE_SIGNATURE | split: "," %}
+{% assign t = stripe_signature[0] | split: '=' | last %}
+{% assign secret = stripe_signature[1] | split: '=' | last %}
+{{ t }}
+{{ secret }}
+{% assign json_params = params | json %}
+{{ json_params }}
+
+{% assign signed_payload = t | append: '.' | append: json_params %}
+{% assign signed_payload_hmac = signed_payload | hmac: webhook_secret %}
+
+{{ params }}

@@ -1,0 +1,7 @@
+{% comment %}
+TODO add config page
+{%- assign gateway = context.exports.payments.gateway_name -%}
+{%- assign gateway_config = "modules/" | append: gateway | append: '/admin/config' -%}
+{%- include gateway_config -%}
+{% endcomment %}
+
