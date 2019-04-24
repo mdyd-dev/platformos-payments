@@ -1,7 +1,8 @@
-  {%- assign key = redirect_to -%}
-  {%- for property in data -%}
-    {%- if signature_properties == blank or signature_properties contains property.first -%}
-      {%- assign key = key | append: '|' | append: property.last -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {{- key | compute_hmac: context.constants.payment_secret -}}
+{%- assign key = redirect_to -%}
+{%- for property in data -%}
+  {%- if signature_properties == blank or signature_properties contains property.first -%}
+    {%- assign key = key | append: '|' | append: property.last -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign hmac =  key | compute_hmac: context.constants.payment_secret -%}
+{{- hmac | strip -}}

@@ -1,13 +1,13 @@
 ---
 name: validate_signature
-redirect_to: context.location.href
+redirect_to: "{{ context.params.redirect_to }}"
 flash_alert: Provided properties can not be modified.
 ---
-{%- capture "signature" -%}
-{% include 'modules/payments/shared/calculate_signature',
-  data: context.params.form.properties_attributes.data, 
-  redirect_to: context.params.redirect_to,
-  signature_properties: context.params.form.signature_properties 
-%}
-{%- endcapture -%}
-{% if signature != blank and context.params.signature == signature %}true{% endif %}
+{%- capture "signature" -%}{%- include 'modules/payments/shared/calculate_signature',
+    data: context.params.form.properties_attributes.data, 
+    redirect_to: context.params.redirect_to,
+    signature_properties: context.params.form.signature_properties 
+-%}{%- endcapture -%}
+{%- assign sig = context.params.signature | strip -%}
+{% log signature, type: "DEBUG" %}
+{% if signature != blank and sig == signature %}true{% endif %}
