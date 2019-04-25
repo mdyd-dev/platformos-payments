@@ -1,8 +1,16 @@
-{%- assign key = redirect_to -%}
+{%- if redirect_to == blank -%}
+  {%- assign key = '' -%}
+{%- else -%}
+  {%- assign key = redirect_to -%}
+{%- endif -%}
+
+{%- assign key = key | split: ',' -%}
+
 {%- for property in data -%}
   {%- if signature_properties == blank or signature_properties contains property.first -%}
-    {%- assign key = key | append: '|' | append: property.last -%}
+    {%- assign key = key | add_to_array: property.last -%}
   {%- endif -%}
 {%- endfor -%}
+{%- assign key = key | join: '|' -%}
 {%- assign hmac =  key | compute_hmac: context.constants.payment_secret -%}
 {{- hmac | strip -}}
