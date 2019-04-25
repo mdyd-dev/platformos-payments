@@ -1,0 +1,20 @@
+---
+name: validate_signature_for_get_request
+redirect_to: "{{ context.params.redirect_to }}"
+flash_alert: Not authorized
+---
+{% assign ignored_params = 'controller,action,slug,slug2,slug3,format,signature' | split: ',' %}
+{% assign signature_properties = '' %}
+{%- for param in context.params -%}
+  {%- assign key = param.first -%}
+  {% if key == blank %}{% continue %}{% endif %}
+  {%- if ignored_params contains key -%}{% continue %}{% endif %}
+  {% assign signature_properties = signature_properties | append: ',' | append: key %}
+{%- endfor -%}
+{% assign signature_properties = signature_properties | split: ',' %}
+{%- capture "signature" -%}{%- include 'modules/payments/shared/calculate_signature',
+    data: context.params,
+    signature_properties: signature_properties
+-%}{%- endcapture -%}
+{%- assign sig = context.params.signature | strip -%}
+{% if signature != blank and sig == signature %}true{% endif %}
