@@ -1,0 +1,42 @@
+---
+slug: payments/api/create_payment
+method: post
+layout_name: ''
+authorization_policies: 
+- modules/payments/validate_api_signature
+---
+
+{% assign gateway_name = 'stripe' %}
+{% export gateway_name, namespace: "payments"  %}
+
+{% graphql  cc = 'modules/payments/get_credit_card_by_id', id: context.params.credit_card_id %}
+
+{% assign credit_card = cc.customizations.results.first %}
+{% query_graph 'modules/payments/get_customer', result_name: "cu", id: credit_card.properties.customer_id %}
+{% assign customer = cu.customizations.results.first %}
+
+{% parse_json "payment_data" %}
+  {
+    "id": "{{ credit_card.id }}",
+    "customer": "{{ customer.gateway_id }}",
+    "source": "{{ credit_card.properties.gateway_id }}",
+    "amount": {{ context.params.amount }},
+    "currency": "USD"
+  }
+{% endparse_json %}
+
+{% parse_json "data" %}
+  {
+    "properties": [
+       { "name": "request_type", "value": "create_payment" },
+       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" } 
+     ]
+  }
+{% endparse_json %}
+
+{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: data %}
+{% parse_json "payment_properties" %}
+  {{ g.customization_create.properties.data }}
+{% endparse_json %}
+
+{{ payment_properties | add_hash_key: 'id', g.customization_create.id | json }}

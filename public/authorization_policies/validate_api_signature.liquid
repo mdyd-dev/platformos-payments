@@ -1,0 +1,28 @@
+---
+name: validate_api_signature
+redirect_to: "{{ context.params.redirect_to }}"
+flash_alert: Provided properties can not be modified.
+---
+{%- assign except_params = 'signature|controller|action|slug|slugs|slug2|slug3' | split: "|" -%}
+{%- assign signature_properties = '' | split: ',' -%}
+{%- for param in context.params -%}
+  {%- unless except_params contains param.first -%}
+    {%- assign signature_properties = signature_properties | add_to_array: param.first -%}
+  {%- endunless -%}
+{% endfor -%}
+
+{%- capture "signature" -%}{%- 
+  include 'modules/payments/shared/calculate_signature',
+    data: context.params,
+    signature_properties: signature_properties,
+    redirect_to: null
+%}{%- endcapture -%}
+
+{%- assign passed_signature = context.params.signature | strip -%}
+{%- assign expires_in = context.params.expires_in | to_time -%}
+{%- assign now = "now" | to_time -%}
+{%- assign expires_in_minus_now = now | time_diff: expires_in -%}
+
+{% log signature, type: "sig1" %}
+{% log passed_signature, type: "sig2" %}
+{% if passed_signature == signature and expires_in_minus_now > 0 %}true{% endif %}

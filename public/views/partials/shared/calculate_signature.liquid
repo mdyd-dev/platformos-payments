@@ -5,7 +5,6 @@
 {%- endif -%}
 
 {%- assign key = key | split: ',' -%}
-
 {%- for property in data -%}
   {%- if signature_properties == blank or signature_properties contains property.first -%}
     {%- assign key = key | add_to_array: property.last -%}
