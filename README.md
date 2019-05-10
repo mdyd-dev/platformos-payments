@@ -4,21 +4,21 @@ A module for processing payments in PlatformOS.
 
 ## List of features
  - [x] create charge with form
- - [ ] create charge with mutation
+ - [x] create charge with mutation
  - [x] create customer with form
  - [x] module configuration with template-values
- - [ ] create customer with mutation
+ - [x] create customer with mutation
  - [x] create credit card with form
- - [ ] create credit card with mutation
+ - [x] create credit card with mutation
  - [x] create refund with form
- - [ ] create refund with mutation
+ - [x] create refund with mutation
  - [x] add autorization policies where needed
  - [ ] add api call for capturing authorized charges
- - [ ] webhook support
+ - [x] webhook support
  - [x] merchant account creation with form
  - [ ] automated payouts
  - [ ] manual payouts
- - [ ] grapph queries to fetch all defined modules
+ - [x] grapph queries to fetch all defined modules
  - [x] proper error handling
 
 ## Installation

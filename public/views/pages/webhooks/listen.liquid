@@ -1,27 +1,29 @@
 ---
-slug: payments/webhooks/listen
+slug: webhooks/listen
 method: post
 layout_name: ''
 authorization_policies:
 ---
-{% assign stripe_signature = context.headers.HTTP_STRIPE_SIGNATURE | split: "," %}
-{% assign t = stripe_signature[0] | split: '=' | last %}
-{% assign secret = stripe_signature[1] | split: '=' | last %}
-{{ t }}
-
 {%- include 'modules/stripe/shared/api_credentials' -%}
-{% assign webhook_listen_url = "https://" | append: context.location.host | append: "/payments/webhooks/listen" %}
+
+{%- assign stripe_signature = context.headers.HTTP_STRIPE_SIGNATURE | split: "," %}
+{%- assign t = stripe_signature[0] | split: '=' | last %}
+{%- assign secret = stripe_signature[1] | split: '=' | last %}
+{%- assign webhook_listen_url = "https://" | append: context.location.host | append: "/payments/webhooks/listen" %}
 {% graphql g = 'modules/payments/get_webhook_endpoints', livemode: context.exports.payment.livemode, url: webhook_listen_url %}
-{% assign last_webhook_config = g.customizations.results.last %}
-{% assign webhook_secret = last_webhook_config.properties.secret %}
+{%- assign last_webhook_config = g.customizations.results.last %}
 
-{% assign json_params = params | remove_hash_key: "slug3" | json %}
-{{ json_params }}
+{%- capture "signed_payload" -%}{{ t }}.{{ context.post_params }}{% endcapture %}
 
-{% assign signed_payload = t | append: '.' | append: json_params %}
-webhook_secret {{ webhook_secret }}
-{% assign signed_payload_hmac = signed_payload | compute_hmac: webhook_secret %}
-t {{ t }}
-secret {{ secret }}
-{{ json_params }}
-{{ signed_payload_hmac }}
+{%- assign webhook_secret = last_webhook_config.properties.secret %}
+{%- assign signed_payload_hmac = signed_payload | compute_hmac: webhook_secret %}
+
+{% if secret == signed_payload_hmac %}
+  {% parse_json 'webhook_data' %}{{ context.post_params }}{% endparse_json %}
+  {%- assign webhook_name = params.type | replace: ".", "_" -%}
+  {%- assign gateway = context.exports.payments.gateway_name -%}
+  {%- assign webhook_processor = "modules/stripe/webhook_processors/" | append: webhook_name -%}
+  {%- include webhook_processor, data: webhook_data.data.object -%}
+{% endif %}
+
+
