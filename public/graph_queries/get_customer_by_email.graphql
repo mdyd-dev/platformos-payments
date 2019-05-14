@@ -1,13 +1,15 @@
 query get_customer_by_email($email: String!) {
-  customizations(
+  customizations: models(
     per_page: 1
-    name: "modules/payments/customer"
-    is_deleted: false
-    properties: [
-      { name: "email", value: $email }
-    ]
+    filter: {
+      name: { value:  "modules/payments/customer" }
+      deleted_at: { exists: false }
+      properties: [
+        { name: "email", value: $email }
+      ]
+    }
     sort: {
-      name: "created_at", order: "DESC"
+      created_at: { order: DESC }
     }
   ) {
     results {

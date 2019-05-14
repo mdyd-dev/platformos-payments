@@ -1,9 +1,11 @@
 query get_customer($id: ID!) {
-  customizations(
+  customizations: models(
     per_page: 1
-    name: "modules/payments/customer"
-    is_deleted: false
-    id:  $id
+    filter: {
+      name: { value: "modules/payments/customer" }
+      deleted_at: { exists: false }
+      id: { value: $id }
+    }
   ) {
     results {
       id

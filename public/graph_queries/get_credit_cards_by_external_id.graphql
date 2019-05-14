@@ -1,15 +1,25 @@
 query get_credit_cards_by_external_id($external_id: String!, $gateway_id: String, $id: ID) {
-  customizations(
+  customizations: models(
     per_page: 20
-    id: $id
-    name: "modules/payments/credit_card"
-    is_deleted: false
-    properties: [
-      { name: "gateway_id", value: $gateway_id }
-      { name: "external_id", value: $external_id }
-    ]
+    filter: {
+      id: {
+        value: $id
+      }
+      name: {
+        value: "modules/payments/credit_card"
+      }
+      deleted_at: {
+        exists: false
+      }
+      properties: [
+        { name: "gateway_id", value: $gateway_id }
+        { name: "external_id", value: $external_id }
+      ]
+    }
     sort: {
-      name: "created_at", order: "DESC"
+      created_at: {
+        order: DESC
+      }
     }
   ) {
     results {
