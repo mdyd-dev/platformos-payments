@@ -13,13 +13,15 @@ A module for processing payments in PlatformOS.
  - [x] create refund with form
  - [x] create refund with mutation
  - [x] add autorization policies where needed
- - [ ] add api call for capturing authorized charges
+ - [x] add api call for capturing authorized charges
  - [x] webhook support
  - [x] merchant account creation with form
- - [ ] automated payouts
- - [ ] manual payouts
  - [x] grapph queries to fetch all defined modules
  - [x] proper error handling
+ - [x] token charge
+ - [x] automated payouts to connected accounts
+ - [ ] manual payouts
+ - [ ] gateway configuration UI
 
 ## Installation
 
