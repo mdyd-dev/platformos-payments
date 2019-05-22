@@ -1,0 +1,14 @@
+---
+name: capture_payment_form
+resource: modules/payments/payment
+resource_owner: anyone
+flash_notice: "Successfully paid!"
+flash_alert: "Payment failed!"
+configuration:
+  properties:
+    state:
+    paid_at:
+default_payload: >
+authorization_policies:
+---
+

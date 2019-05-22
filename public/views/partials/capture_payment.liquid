@@ -1,0 +1,21 @@
+{%- parse_json 'data' -%}
+  {
+    "gateway_id" : "{{ payment.properties.gateway_id }}",
+    "payment_id": "{{ payment.id }}"
+  }
+{%- endparse_json -%}
+
+{%- parse_json 'config' -%}
+  {
+    "button": "Capture",
+    "redirect_to": "{{ redirect_to | default: context.location.href }}"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  request_type: 'capture_payment'
+  config: config
+  data: data
+%}
+

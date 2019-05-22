@@ -59,7 +59,7 @@ default_payload: >
 
       {
         "properties_attributes": {
-          "response": "OK"
+          "response": "{{ response.api_call_send.response.body | replace: '"', '\"' }}"
         }
       }
     {% else %}
@@ -73,7 +73,9 @@ default_payload: >
   {% endif %}
 ---
 {%- assign gateway = context.exports.payments.gateway_name -%}
-{%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
+{% if gateway_template == blank %}
+  {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
+{% endif %}
 {%- assign data_attribute = form_builder.fields.properties.data.name -%}
 {%- assign redirect_to = config.redirect_to | default: context.location.href -%}
 {%- include 'modules/stripe/shared/api_credentials' -%}
