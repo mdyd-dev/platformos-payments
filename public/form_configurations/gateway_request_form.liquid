@@ -25,8 +25,7 @@ default_payload: >
     {%- assign gateway = request.gateway | default: context.exports.payments.gateway_name -%}
     {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request.request_type -%}
 
-    {%- graphql response = 'modules/payments/gateway_create', data: request.data, gateway_template: gateway_api_template -%}
-    {% log response, type: "RESPONSE" %}
+    {%- graphql response = 'modules/payments/gateway_request', data: request.data, api_template: gateway_api_template -%}
     {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- parse_json 'response_data' -%}
       {%- include response_parser, gateway_response: response.api_call_send.response, data: request.data -%}
@@ -36,19 +35,13 @@ default_payload: >
       {%- assign form_name = 'modules/payments/' | append: request.request_type | append: '_form' -%}
       {% if request.request_type contains 'delete' %}
         {%- execute_query "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
-        {% log g, type: "DEBUG DELETE" %}
-        {% log form_name, type: "Form Name" %}
         {%- assign customization = g.customization_delete %}
       {% elsif response_data.id != blank %}
         {%- execute_query "modules/payments/update_customization", form: form_name, data: response_data, id: response_data.id -%}
         {%- assign customization = g.customization_update %}
-        {% log g, type: "DEBUG UPDATE" %}
       {% else %}
-        {% log response_data, type: "??????" %}
-        {% log response_parser, type: "??????" %}
         {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
         {%- assign customization = g.customization_create %}
-        {% log g, type: "DEBUG CREATE" %}
       {% endif %}
 
       {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: request.request_type -%}
@@ -63,7 +56,6 @@ default_payload: >
         }
       }
     {% else %}
-      {% log response_data.errors, type: "errors" %}
       {
         "properties_attributes": {
           "request_errors": {{ response_data.errors | json }}

@@ -46,8 +46,23 @@ PlatformOS Payment module is designed to work with multipl Payment provides. For
 git submodule add https://github.com/mdyd-dev/platformos-payments-stripe modules/stripe
 ```
 4. Edit `modules/stripe/template-values.json` and set Stripe public and secret keys
-5. Deploy instance.  
+5. Deploy instance.
 6. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
+
+### How Payment Module Works
+
+Payment module is a backbone for processing all data relevant to processing payments with third party API's of any payment gateway that is installed as separate module.
+The entry point for any acction is `gateway_request_form` that can be used as embeded form or mutation as follows:
+
+1. On any page include gateway_request_form with poper configuration:
+  - gateway - name of module that define API communication with payment gateway (for now there is only stripe gateway available as separate module)
+  - request_type - name of request that is prefedined in API communication module for example "create_payment" or "create_refund"
+2. User visits the page where form is embeded.
+3. Based on the value of "request_type" form content defined in `modules/stripe/public/views/partials/templates/[request_type]` is rendered in the browser.
+3. On form submition request is processed with `gateway_request_form` and the code in `default_payload` is invoked:
+4. Gateway API call is invoked with `gateway_request` mutation and API notification template based on request_type
+5. Gateway response is processed with "response_mapper" defined in `modules/stripe/public/views/partials/response_mapper/[request_type]`
+6. Customization is created/updated/deleted based on parsed response and it's type.
 
 ## Payment Model
 
@@ -89,7 +104,7 @@ Where:
 - gateway - payent gateway used for transaction
 - request_type - defines type of request that is send to payment gateway, value is determined by installed "gateway module".
 - redirect_to - point of redirection
-- configuration - 
+- configuration -
 
 Data object:
 - currency - transaction currency

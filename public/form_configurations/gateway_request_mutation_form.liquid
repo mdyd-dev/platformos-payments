@@ -24,7 +24,7 @@ default_payload: >
     {%- assign gateway = request.gateway | default: context.exports.payments.gateway_name -%}
     {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request.request_type -%}
 
-    {%- graphql response = 'modules/payments/gateway_create', data: request.data, gateway_template: gateway_api_template -%}
+    {%- graphql response = 'modules/payments/gateway_request', data: request.data, api_template: gateway_api_template -%}
     {% log response, type: "RESPONSE" %}
     {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request.request_type -%}
     {%- parse_json 'response_data' -%}

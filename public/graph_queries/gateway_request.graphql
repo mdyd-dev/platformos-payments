@@ -1,0 +1,11 @@
+mutation gateway_request($api_template: String!, $data: HashObject)  {
+  api_call_send(
+    data: $data
+    template: { name: $api_template }
+  ) {
+    response{ status body }
+    errors {
+      message
+    }
+  }
+}
