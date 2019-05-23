@@ -17,6 +17,13 @@ fields:
     data:
     response:
     request_errors:
+
+redirect_to: >
+  {%- if form.properties.request_errors != blank -%}
+    {{ context.params.fallback_redirect_to }}
+  {%- else -%}
+    {{ context.params.redirect_to }}
+  {%- endif -%}
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.request_errors }}{% else %}{{ form.success_message }}{% endif %}"
 callback_actions: >
 default_payload: >
@@ -44,10 +51,8 @@ default_payload: >
         {%- assign customization = g.customization_create %}
       {% endif %}
 
-      {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: request.request_type -%}
-      {%- query_graph 'modules/payments/find_partial', path: callback_name -%}
-      {% if g.admin_liquid_partials.results.first.id %}
-        {%- include callback_name, response: response_data, customization: customization, params: params -%}
+      {% if callback != blank %}
+        {%- include callback, response: response_data, customization: customization, params: params -%}
       {% endif %}
 
       {
@@ -80,6 +85,7 @@ default_payload: >
 
 {% form html-class: @request_type %}
   <input type="hidden" name="redirect_to" value="{{ redirect_to }}" />
+  <input type="hidden" name="fallback_redirect_to" value="{{ config.fallback_redirect_to | default: context.location.href }}" />
   <input type="hidden" name="signature" value="{{ signature }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
@@ -88,7 +94,7 @@ default_payload: >
       name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
     <input
       type="hidden"
-      name="{{ data_attribute}}[{{property.first }}]"
+      name="{{ data_attribute }}[{{ property.first }}]"
       value="{{ property.last }}"
       data-{{ property.first }}="{{ property.last }}"
     />
