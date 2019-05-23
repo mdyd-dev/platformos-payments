@@ -8,6 +8,9 @@ fields:
   config:
     property_options:
       virtual: true
+  success_message:
+    property_options:
+      virtual: true
   signature_properties:
     property_options:
       virtual: true
@@ -24,7 +27,7 @@ redirect_to: >
   {%- else -%}
     {{ form.config.success_path | default:  context.params.redirect_to | default:  context.params.current_path }}
   {%- endif -%}
-flash_notice: "{% if form.properties.request_errors != blank %}{{ form.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.config.success_message }}{% endif %}"
+flash_notice: "{% if form.properties.request_errors != blank %}{{ form.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
 default_payload: >
   {% if form %}
@@ -97,6 +100,7 @@ default_payload: >
   <input type="hidden" name="signature" value="{{ signature }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
+  
   {%- for property in data -%}
     <input type="hidden"
       name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
