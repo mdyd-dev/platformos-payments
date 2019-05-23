@@ -15,6 +15,7 @@
 
 {%- parse_json 'config' -%}
   {
+    "request_type": "create_payment",
     "button": "Charge me {{ data.amount | pricify_cents: data.currency }}",
     "label": "Save",
     "redirect_to": "{{ redirect_to | default: context.location.href }}"
@@ -23,7 +24,6 @@
 
 {%-
   include_form 'modules/payments/gateway_request_form',
-  request_type: 'create_payment'
   config: config
   data: data
 %}

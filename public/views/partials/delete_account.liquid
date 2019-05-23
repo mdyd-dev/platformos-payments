@@ -10,6 +10,7 @@
 
 {%- parse_json 'config' -%}
   {
+    "request_type": "delete_account",
     "button": "Delete",
     "redirect_to": "{{ redirect_to | default: context.location.href }}"
   }
@@ -17,8 +18,7 @@
 
 {%-
   include_form 'modules/payments/gateway_request_form',
-  request_type: 'delete_account'
-  config: config
+  config: config,
   data: data
 %}
 

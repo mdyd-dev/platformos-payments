@@ -85,6 +85,8 @@ The easiest way to enable payment creation on your page is by simply embeding th
 
 {%- parse_json 'config' -%}
   {
+    "gateway": 'stripe',
+    "request_type": 'create_payment',
     "button": "Pay Now",
     "require_zip": "true",
     "redirect_to": "/payments"
@@ -93,18 +95,18 @@ The easiest way to enable payment creation on your page is by simply embeding th
 
 {%-
   include_form 'modules/payments/gateway_request_form',
-  gateway: 'stripe',
-  request_type: 'create_payment',
   config: config,
   data: data
 %}
 ```
 
-Where:
+Config Object:
 - gateway - payent gateway used for transaction
 - request_type - defines type of request that is send to payment gateway, value is determined by installed "gateway module".
-- redirect_to - point of redirection
-- configuration -
+- success_message - flash message text presented after successfull API request
+- error_message - flash message text presented after unsuccessful API request
+- success_path - point of redirection affter successful API request, default current path
+- error_path - point of redirection after unsuccessful API request, default current path
 
 Data object:
 - currency - transaction currency

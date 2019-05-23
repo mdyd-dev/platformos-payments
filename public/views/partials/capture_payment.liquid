@@ -7,6 +7,7 @@
 
 {%- parse_json 'config' -%}
   {
+    "request_type": "capture_payment",
     "button": "Capture",
     "redirect_to": "{{ redirect_to | default: context.location.href }}"
   }
@@ -14,7 +15,6 @@
 
 {%-
   include_form 'modules/payments/gateway_request_form',
-  request_type: 'capture_payment'
   config: config
   data: data
 %}
