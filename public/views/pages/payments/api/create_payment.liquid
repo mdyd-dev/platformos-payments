@@ -41,7 +41,7 @@ authorization_policies:
   {{ g.customization_create.properties.data }}
 {%- endparse_json -%}
 {%- if g.customization_create.properties.request_errors != blank -%}
-  {"error": "{{ g.customization_create.properties.request_errors }}"}
+  {"error": "{{ g.customization_create.properties.request_errors }}", "status":"error"}
 {%- else -%}
-  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | json }}
+  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | add_hash_key: 'status', 'ok' | json }}
 {%- endif -%}
