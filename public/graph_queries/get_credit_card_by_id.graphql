@@ -1,11 +1,21 @@
 query get_credit_card_by_id($id: ID!) {
-  customizations(
-    per_page: 1
-    id: $id
-    name: "modules/payments/credit_card"
-    is_deleted: false
+  customizations: models(
+    per_page: 20
+    filter: {
+      id: {
+        value: $id
+      }
+      name: {
+        value: "modules/payments/credit_card"
+      }
+      deleted_at: {
+        exists: false
+      }
+    }
     sort: {
-      name: "created_at", order: "DESC"
+      created_at: {
+        order: DESC
+      }
     }
   ) {
     results {
