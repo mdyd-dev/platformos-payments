@@ -1,0 +1,13 @@
+---
+name: transfer
+properties:
+- name: gateway_id
+  type: string
+- name: account_id
+  type: string
+- name: amount_cents
+  type: integer
+- name: currency
+  type: string
+- name: state
+  type: string

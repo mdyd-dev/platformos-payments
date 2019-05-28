@@ -1,0 +1,22 @@
+---
+name: create_transfer_form
+resource: modules/payments/transfer
+resource_owner: anyone
+flash_notice: "Successfully paid!"
+flash_alert: "Payment failed!"
+configuration:
+  properties:
+    gateway_id:
+      validation:
+        presence: true
+    amount_cents:
+      validation:
+        presence: true
+    currency:
+    external_id:
+    account_id:
+    state:
+default_payload: >
+authorization_policies:
+---
+

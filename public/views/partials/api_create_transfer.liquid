@@ -1,10 +1,11 @@
-
 {% assign ten_minutes_from_now = "in 10 minutes" | to_time %}
 
 {% parse_json "data" %}
 {
-  "credit_card_id": "{{ credit_card_id }}",
-  "amount": "{{ amount }}",
+  "account_id": "{{ account.id }}",
+  "destination": "{{ account.gateway_id }}",
+  "amount": "{{ amount_cents }}",
+  "currency": "USD",
   "expires_in": "{{ ten_minutes_from_now }}"
 }
 {% endparse_json %}
@@ -16,10 +17,10 @@
 %}
 {%- endcapture -%}
 
-<form action="/payments/api/create_payment " method="POST">
+<form action="/payments/api/create_transfer" method="POST">
   {% for prop in data %}
     <input type="hidden" name="{{ prop[0] }}" value="{{ prop[1] }}">
   {% endfor %}
   <input type="hidden" name="signature" value="{{ signature }}">
-  <button type="submit" class="btn btn-info">API Pay {{ amount  | pricify_cents }}</button>
+  <button type="submit" class="btn btn-info">API Transfer {{ amount_cents  | pricify_cents }}</button>
 </form>

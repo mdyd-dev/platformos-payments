@@ -1,0 +1,38 @@
+---
+slug: payments/api/create_transfer
+method: post
+layout_name: ''
+authorization_policies:
+- modules/payments/validate_api_signature
+---
+{% assign destination = context.params.destination %}
+{% parse_json "payment_data" %}
+  {
+    "destination": "{{ destination }}",
+    "amount": "{{ context.params.amount }}",
+    "currency": "USD"
+  }
+{% endparse_json %}
+
+{% parse_json "config" %}
+  {
+    "request_type": "create_transfer",
+    "gateway": "stripe"
+  }
+{% endparse_json %}
+
+{% parse_json "data" %}
+  {
+    "properties": [
+       { "name": "config", "value": "{{ config | json | escape_javascript }}" },
+       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" }
+     ]
+  }
+{% endparse_json %}
+
+{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: data %}
+{% parse_json "transfer_properties" %}
+  {{ g.customization_create.properties.data }}
+{% endparse_json %}
+
+{{ transfer_properties | add_hash_key: 'id', g.customization_create.id | json }}

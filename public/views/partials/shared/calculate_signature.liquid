@@ -9,5 +9,5 @@
   {%- assign key = key | add_to_array: property.last -%}
 {%- endfor -%}
 {%- assign key = key | join: '|' -%}
-{%- assign hmac =  key | compute_hmac: context.constants.payment_secret -%}
+{%- assign hmac = key | compute_hmac: context.constants.payment_secret -%}
 {{- hmac | strip -}}

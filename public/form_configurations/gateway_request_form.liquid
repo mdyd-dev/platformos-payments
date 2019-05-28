@@ -5,9 +5,6 @@ resource_owner: anyone
 authorization_policies:
   - modules/payments/validate_signature
 fields:
-  config:
-    property_options:
-      virtual: true
   success_message:
     property_options:
       virtual: true
@@ -17,6 +14,7 @@ fields:
   properties:
     request_type:
     gateway:
+    config:
     data:
     response:
     request_errors:
@@ -30,53 +28,7 @@ redirect_to: >
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
 default_payload: >
-  {% if form %}
-    {%- assign data = params.properties_attributes.data -%}
-    {%- assign config = params.config -%}
-    {%- assign gateway = params.properties_attributes.gateway -%}
-    {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: config.request_type -%}
-    {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: config.request_type -%}
-
-    {%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
-    {%- parse_json 'response_data' -%}
-      {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
-    {%- endparse_json -%}
-
-    {% if response_data.errors == blank or response_data.errors == empty %}
-      {%- assign form_name = 'modules/payments/' | append: config.request_type | append: '_form' -%}
-      {% if config.request_type contains 'delete' %}
-        {%- execute_query "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
-        {%- assign customization = g.customization_delete %}
-      {% elsif response_data.id != blank %}
-        {%- execute_query "modules/payments/update_customization", form: form_name, data: response_data, id: response_data.id -%}
-        {%- assign customization = g.customization_update %}
-      {% else %}
-        {%- execute_query "modules/payments/create_customization", form: form_name, data: response_data -%}
-        {%- assign customization = g.customization_create %}
-      {% endif %}
-
-      {% if config.callback != blank %}
-        {%- include config.callback, response: response_data, customization: customization, params: params -%}
-      {% endif %}
-
-      {% if 'create_account' contains config.request_type %}
-        {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: config.request_type -%}
-        {%- include callback_name, response: response_data, customization: customization, params: params -%}
-      {% endif %}
-
-      {
-        "properties_attributes": {
-          "response": "{{ response.api_call_send.response.body | replace: '"', '\"' }}"
-        }
-      }
-    {% else %}
-      {
-        "properties_attributes": {
-          "request_errors": {{ response_data.errors | json }}
-         }
-      }
-    {% endif %}
-  {% endif %}
+  {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
 ---
 {%- include 'modules/stripe/shared/api_credentials' -%}
 {%- assign gateway = config.gateway | default: context.exports.payments.gateway_name -%}
@@ -115,7 +67,7 @@ default_payload: >
   {%- for property in config -%}
     <input
       type="hidden"
-      name="{{ form_builder.fields.config.name  }}[{{ property.first }}]"
+      name="{{ form_builder.fields.properties.config.name  }}[{{ property.first }}]"
       value="{{ property.last }}"
     />
   {%- endfor -%}

@@ -2,10 +2,9 @@
 slug: payments/api/create_payment
 method: post
 layout_name: ''
-authorization_policies: 
+authorization_policies:
 - modules/payments/validate_api_signature
 ---
-
 {% assign gateway_name = 'stripe' %}
 {% export gateway_name, namespace: "payments"  %}
 
@@ -23,7 +22,7 @@ authorization_policies:
     {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
-    "amount": {{ context.params.amount_cents }},
+    "amount": "{{ context.params.amount }}",
     "currency": "USD"
   }
 {% endparse_json %}
@@ -31,7 +30,7 @@ authorization_policies:
   {
     "properties": [
        { "name": "request_type", "value": "create_payment" },
-       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" } 
+       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" }
      ]
   }
 {% endparse_json %}
