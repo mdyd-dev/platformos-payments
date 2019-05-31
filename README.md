@@ -42,10 +42,10 @@ PlatformOS Payment module is designed to work with multipl Payment provides. For
   git submodule add https://github.com/mdyd-dev/platformos-payments modules/payments
   ```
 3. Install PlatfromOS Stripe Module from GitHub repository
-```
-git submodule add https://github.com/mdyd-dev/platformos-payments-stripe modules/stripe
-```
-4. Edit `modules/stripe/template-values.json` and set Stripe public and secret keys
+  ```
+  git submodule add https://github.com/mdyd-dev/platformos-payments-stripe modules/stripe
+  ```
+4. Edit `modules/stripe/template-values.json` and *set Stripe public and secret keys*
 5. Deploy instance.
 6. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
 
@@ -64,15 +64,27 @@ The entry point for any acction is `gateway_request_form` that can be used as em
 5. Gateway response is processed with "response_mapper" defined in `modules/stripe/public/views/partials/response_mapper/[request_type]`
 6. Customization is created/updated/deleted based on parsed response and it's type.
 
+
+## Examples
+
+You will find code examples for various payment actions is separate code repository [Payment Examples](https://github.com/mdyd-dev/platformos-payment-examples).
+Each example is included as different module for proper encapsulation. Demo version of the example can be found in [Payment Examples Page](https://payment-examples.staging.oregon.platform-os.com)
+
+  * [Charge Example](https://github.com/mdyd-dev/platformos-payment-examples/blob/master/modules/charge_example/public/views) - demonstrates how to include most basic payment scenarion with Stripe popup component and the ability to refund each payment. You can play with the example on [payment demo page](https://payment-examples.staging.oregon.platform-os.com/payments)
+  * [Account Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/account_example/public/views) - in this example you will learn how to integrate Stripe Connect with custom accounts support as well as how to process payments to connected accounts. [Demo page](https://payment-examples.staging.oregon.platform-os.com/account)
+  * [Stripe Elements Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/elements_example) - Stripe Elements provide you with Credit Card form functionality that can be quickly added to any page. In this example you will see how to approach two step payments with Authorize and Capture. [Demo](https://payment-examples.staging.oregon.platform-os.com/elements)
+  * [Customer Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/customer_example) - here you will learn the basics of saving your customers Credit Cards so they can be easily charged in the future without reading Credit Card details. [Demo](https://payment-examples.staging.oregon.platform-os.com/customer)
+
+
 ## Payment Model
 
 Payment model represents money transfer from payment source (typically Credit Card) to payment receiver usually Payment Gateway.
-Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one. 
+Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one.
 
 The easiest way to enable payment creation on your page is by simply embeding the form with proper configuration as in the example below.
 
 ```
-{%- parse_json 'data' -%}
+{%- parse_json data -%}
   {
     "email": "{{ context.current_user.email }}",
     "currency": "USD",
@@ -83,10 +95,10 @@ The easiest way to enable payment creation on your page is by simply embeding th
   }
 {%- endparse_json -%}
 
-{%- parse_json 'config' -%}
+{%- parse_json config -%}
   {
-    "gateway": 'stripe',
-    "request_type": 'create_payment',
+    "gateway": "stripe",
+    "request_type": "create_payment",
     "button": "Pay Now",
     "require_zip": "true",
     "redirect_to": "/payments"
@@ -129,7 +141,7 @@ TBD
 To retrieve stored customer:
 
 ```
-{%- query_graph 'modules/payments/get_customer_by_email', result_name: 'g_customer',
+{%- graphql g_customer = 'modules/payments/get_customer_by_email',
   email: "some@example.com"
 -%}
 ```
@@ -146,7 +158,7 @@ Returns Array<modules/payments/customer>:
 To retrieve references to stored cards in stripe you can use:
 
 ```
-{%- query_graph 'modules/payments/get_credit_cards_by_customer_id', result_name: 'g_cards',
+{%- graphql g_cards = 'modules/payments/get_credit_cards_by_customer_id',
   customer_id: customer_id
 -%}
 ```
@@ -154,7 +166,7 @@ To retrieve references to stored cards in stripe you can use:
 Or you can fetch credit cards with Stripe Customer ID (external_id)
 
 ```
-{%- query_graph 'modules/payments/get_credit_cards_by_external_id', result_name: 'g_cards',
+{%- graphql g_cards = 'modules/payments/get_credit_cards_by_external_id',
   external_id: external_id
 -%}
 ```
