@@ -132,6 +132,55 @@ Additinal Data object properties
 - email - email of the customer that is being charged
 
 
+## Customizations
+
+### Template Customization
+
+When gateway_request_form is included on a page, predefined template for given request_type is rendered. For Stripe module you will find all those templates [here](https://github.com/mdyd-dev/platformos-payments-stripe/tree/master/public/views/partials/templates). If you need to customize it, use `gateway_template` configuration option to pass partial view of your choice. 
+
+Example:
+
+```
+{%- parse_json 'config' -%}
+  {
+    "gateway_template": "modules/elements_example/create_payment_elements",
+    "request_type": "create_payment",
+    "redirect_to": "/elements"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  config: config,
+  data: data
+%}
+```
+
+### Custom Callbacks
+
+If you need to add additonal action after the payment gateway response was processed use `callback` config option to pass the path to the partial with code that will be executed after successful gateway request. 
+
+
+Example:
+
+```
+{%- parse_json 'config' -%}
+  {
+    "gateway": "stripe",
+    "request_type": "capture_payment",
+    "callback": "modules/ecommerce/payments/create_payment_callback"
+  }
+{%- endparse_json -%}
+
+{%-
+  include_form 'modules/payments/gateway_request_form',
+  config: config,
+  data: data
+%}
+
+```
+
+
 ## Creating a customer
 
 TBD
