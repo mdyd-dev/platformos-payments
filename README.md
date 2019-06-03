@@ -180,6 +180,13 @@ Example:
 
 ```
 
+In the partial you can invoke graphql mutation to update the state of any object in the database.
+
+```
+{%- assign order_id = params.properties_attributes.order_id | plus: 0 -%}
+{%- graphql callback_result = "modules/ecommerce/update_order", id: order_id, state: "paid" -%}
+```
+
 
 ## Creating a customer
 
