@@ -2,8 +2,7 @@
   {
     "charge" : "{{ payment.properties.gateway_id }}",
     "payment_id": "{{ payment.id }}",
-    "amount_cents": "{{ payment.properties.amount_cents }}",
-    "currency": "{{ payment.properties.currency }}"
+    "amount": "{{ payment.properties.amount_cents }}"
   }
 {%- endparse_json -%}
 
@@ -11,7 +10,7 @@
   {
     "request_type": "create_refund",
     "button": "Refund {{ data.amount_cents | pricify_cents: data.currency }}",
-    "redirect_to": "{{ redirect_to | default: context.location.href }}"
+    "success_path": "{{ redirect_to | default: context.location.href }}"
   }
 {%- endparse_json -%}
 

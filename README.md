@@ -49,9 +49,20 @@ PlatformOS Payment module is designed to work with multipl Payment provides. For
 5. Deploy instance.
 6. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
 
+## Examples
+
+You will find code examples for various payment actions is separate code repository [Payment Examples](https://github.com/mdyd-dev/platformos-payment-examples).
+Each example is included as a different module for proper encapsulation. Demo version of the example can be found in [Payment Examples Page](https://payment-examples.staging.oregon.platform-os.com)
+
+  * [Charge Example](https://github.com/mdyd-dev/platformos-payment-examples/blob/master/modules/charge_example/public/views) - demonstrates how to include most basic payment scenarios with Stripe popup component and the ability to refund each payment. You can play with the example on [payment demo page](https://payment-examples.staging.oregon.platform-os.com/payments)
+  * [Account Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/account_example/public/views) - in this example, you will learn how to integrate Stripe Connect with custom accounts support as well as how to process payments to connected accounts. [Demo page](https://payment-examples.staging.oregon.platform-os.com/account)
+  * [Stripe Elements Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/elements_example) - Stripe Elements provide you with Credit Card form functionality that can be quickly added to any page. In this example, you will see how to approach two-step payments with Authorize and Capture. [Demo](https://payment-examples.staging.oregon.platform-os.com/elements)
+  * [Customer Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/customer_example) - here you will learn the basics of saving your customers Credit Cards so they can be easily charged in the future without reading Credit Card details. [Demo](https://payment-examples.staging.oregon.platform-os.com/customer)
+
+
 ### How Payment Module Works
 
-Payment module is a backbone for processing all data relevant to processing payments with third party API's of any payment gateway that is installed as separate module.
+Payment module is a backbone for processing payments with third party API's of any payment gateway that is installed as separate module.
 The entry point for any acction is `gateway_request_form` that can be used as embeded form or mutation as follows:
 
 1. On any page include gateway_request_form with poper configuration:
@@ -64,16 +75,36 @@ The entry point for any acction is `gateway_request_form` that can be used as em
 5. Gateway response is processed with "response_mapper" defined in `modules/stripe/public/views/partials/response_mapper/[request_type]`
 6. Customization is created/updated/deleted based on parsed response and it's type.
 
+## GatewayRuestForm configuration
 
-## Examples
+When you include gateway_request_form on any page you need to pass two objects as parameters `data` and `config`: 
 
-You will find code examples for various payment actions is separate code repository [Payment Examples](https://github.com/mdyd-dev/platformos-payment-examples).
-Each example is included as a different module for proper encapsulation. Demo version of the example can be found in [Payment Examples Page](https://payment-examples.staging.oregon.platform-os.com)
+`{%-
+  include_form 'modules/payments/gateway_request_form',
+  config: config,
+  data: data
+%}
+`
 
-  * [Charge Example](https://github.com/mdyd-dev/platformos-payment-examples/blob/master/modules/charge_example/public/views) - demonstrates how to include most basic payment scenarios with Stripe popup component and the ability to refund each payment. You can play with the example on [payment demo page](https://payment-examples.staging.oregon.platform-os.com/payments)
-  * [Account Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/account_example/public/views) - in this example, you will learn how to integrate Stripe Connect with custom accounts support as well as how to process payments to connected accounts. [Demo page](https://payment-examples.staging.oregon.platform-os.com/account)
-  * [Stripe Elements Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/elements_example) - Stripe Elements provide you with Credit Card form functionality that can be quickly added to any page. In this example, you will see how to approach two-step payments with Authorize and Capture. [Demo](https://payment-examples.staging.oregon.platform-os.com/elements)
-  * [Customer Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/customer_example) - here you will learn the basics of saving your customers Credit Cards so they can be easily charged in the future without reading Credit Card details. [Demo](https://payment-examples.staging.oregon.platform-os.com/customer)
+### Config Object
+ 
+Configuration object holds the set of configuration options.
+
+There are serveral options that are common to all the reuqest types:
+
+- gateway - is the name of the gateway module e.g. "stripe". Please make sure that proper module is installed. 
+- request_type - defines what kind of request you want to perform. All available requests are defined in `modules/[gateway]/public/notifications/api_call_notifications/[request_type].liquid`. See [Request Types Section](https://github.com/mdyd-dev/platformos-payments-stripe#manual-installation)] in Stripe Module Documentation.
+- success_message - flash message text presented after successfull API request
+- error_message - flash message text presented after unsuccessful API request
+- success_path - point of redirection affter successful API request, default current path
+- error_path - point of redirection after unsuccessful API request, default current path
+
+Additionaly you can pass configuration options specific to the request type - for more details please refer to the documentation in of gateway module for chosen request type. The list of available request types for Stripe you can find on [ Stripe Module Readme Page ](https://github.com/mdyd-dev/platformos-payments-stripe#request-types)
+
+
+### Data Object
+
+Data object is used to pass all data to the payment gateway request. Object state is validated with secret key so it can not be altered by the user before it is send to the gateway. Each gateway request requires different data sets, please check in the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#request-types] what are the options for each request type.
 
 
 ## Payment Model
@@ -101,7 +132,7 @@ The easiest way to enable payment creation on your page is by simply embeding th
     "request_type": "create_payment",
     "button": "Pay Now",
     "require_zip": "true",
-    "redirect_to": "/payments"
+    "success_path": "/payments"
   }
 {%- endparse_json -%}
 
@@ -112,15 +143,7 @@ The easiest way to enable payment creation on your page is by simply embeding th
 %}
 ```
 
-Config Object:
-- gateway - payent gateway used for transaction
-- request_type - defines type of request that is send to payment gateway, value is determined by installed "gateway module".
-- success_message - flash message text presented after successfull API request
-- error_message - flash message text presented after unsuccessful API request
-- success_path - point of redirection affter successful API request, default current path
-- error_path - point of redirection after unsuccessful API request, default current path
-
-Data object:
+Data Object:
 - currency - transaction currency
 - description - transaction description visible in Stripe Checout form
 - statement_descriptor - description of the transaction visible on the bank statement
@@ -145,7 +168,7 @@ Example:
   {
     "gateway_template": "modules/elements_example/create_payment_elements",
     "request_type": "create_payment",
-    "redirect_to": "/elements"
+    "success_path": "/elements"
   }
 {%- endparse_json -%}
 
