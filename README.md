@@ -77,7 +77,7 @@ The entry point for any acction is `gateway_request_form` that can be used as em
 
 # Gateway Ruest Form configuration
 
-When you include gateway_request_form on any page you need to pass two objects as parameters `data` and `config`: 
+When you include gateway_request_form on any page you need to pass two objects as parameters `data` and `config`:
 
 `{%-
   include_form 'modules/payments/gateway_request_form',
@@ -87,13 +87,14 @@ When you include gateway_request_form on any page you need to pass two objects a
 `
 
 ## Config Object
- 
+
 Configuration object holds the set of configuration options.
 
 There are serveral options that are common to all the reuqest types:
 
-- gateway - is the name of the gateway module e.g. "stripe". Please make sure that proper module is installed. 
+- gateway - is the name of the gateway module e.g. "stripe". Please make sure that proper module is installed.
 - request_type - defines what kind of request you want to perform. All available requests are defined in `modules/[gateway]/public/notifications/api_call_notifications/[request_type].liquid`. See [Request Types Section](https://github.com/mdyd-dev/platformos-payments-stripe#manual-installation)] in Stripe Module Documentation.
+- callback - path to the partial with the code that is processed after successful request to payment gateway.
 - success_message - flash message text presented after successfull API request
 - error_message - flash message text presented after unsuccessful API request
 - success_path - point of redirection affter successful API request, default current path
@@ -107,7 +108,7 @@ Additionaly you can pass configuration options specific to the request type - fo
 Data object is used to pass all data to the payment gateway request. Object state is validated with secret key so it can not be altered by the user before it is send to the gateway. Each gateway request requires different data sets, please check in the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#request-types) what are the options for each request type.
 
 
-## Example 1. create_payment 
+## Example 1. create_payment
 
 Payment model represents money transfer from payment source (typically Credit Card) to payment receiver usually Payment Gateway.
 Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one.
@@ -145,11 +146,62 @@ The easiest way to enable payment creation on your page is by simply embeding th
 
 See the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#create_payment) for more information about `data` and `config` objects.
 
+
+## Example 2. Gateway Request with Mutation
+
+In this example you will learn how to invoke any gateway request as a callback with GraphQL mutation. 
+
+1. Similar to Example 1, define `config` and `data` object
+
+    ```
+    {% parse_json "data" %}
+      {
+        "destination": "{{ destination }}",
+        "amount": "{{ context.params.amount }}",
+        "currency": "USD"
+      }
+    {% endparse_json %}
+
+    {% parse_json "config" %}
+      {
+        "request_type": "create_transfer",
+        "gateway": "stripe"
+      }
+    {% endparse_json %}
+    ```
+
+2. Next step is to prepare JSON that will wrap `data` and `config` as properties of GatewayRquest object.
+    ```
+    {% parse_json "gateway_request_data" %}
+      {
+        "properties": [
+           { "name": "config", "value": "{{ config | json | escape_javascript }}" },
+           { "name": "data", "value":  "{{ data | json | escape_javascript }}" }
+         ]
+      }
+    {% endparse_json %}
+    ```
+2. Pass `gateway_request_data` object to `create_customization` mutation:
+
+    ```
+    {% 
+      graphql g = "modules/payments/create_customization", 
+        form: "modules/payments/gateway_request_mutation_form",
+        data: gateway_request_data
+    %}
+
+    ```
+
+    Please note, that `gateway_request_mutation_form` is used insteaed of 'gateway_request_form' in order to skip authorization_policy checks that are necessary when passing data through HTML form.
+
+3. Process the mutation execution response
+
+
 # Customization of Payment Module
 
 ### Template Customization
 
-When gateway_request_form is included on a page, predefined template for given request_type is rendered. For Stripe module you will find all those templates [here](https://github.com/mdyd-dev/platformos-payments-stripe/tree/master/public/views/partials/templates). If you need to customize it, use `gateway_template` configuration option to pass partial view of your choice. 
+When gateway_request_form is included on a page, predefined template for given request_type is rendered. For Stripe module you will find all those templates [here](https://github.com/mdyd-dev/platformos-payments-stripe/tree/master/public/views/partials/templates). If you need to customize it, use `gateway_template` configuration option to pass partial view of your choice.
 
 Example:
 
@@ -171,7 +223,7 @@ Example:
 
 ### Custom Callbacks
 
-If you need to add additonal action after the payment gateway response was processed use `callback` config option to pass the path to the partial with code that will be executed after successful gateway request. 
+If you need to add additonal action after the payment gateway response was processed use `callback` config option to pass the path to the partial with code that will be executed after successful gateway request.
 
 
 Example:
