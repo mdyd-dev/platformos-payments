@@ -23,7 +23,7 @@ A module for processing payments in PlatformOS.
  - [ ] manual payouts
  - [ ] gateway configuration UI
 
-## Installation
+# Installation
 
 PlatformOS Payment module is designed to work with multipl Payment provides. For to moment the main supported Payment Gateway is [Stripe](https://stripe.com) and it comes with separated module that needs to be installed, simply follow the steps bellow for quick installation.
 
@@ -49,7 +49,7 @@ PlatformOS Payment module is designed to work with multipl Payment provides. For
 5. Deploy instance.
 6. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
 
-## Examples
+# Live Examples
 
 You will find code examples for various payment actions is separate code repository [Payment Examples](https://github.com/mdyd-dev/platformos-payment-examples).
 Each example is included as a different module for proper encapsulation. Demo version of the example can be found in [Payment Examples Page](https://payment-examples.staging.oregon.platform-os.com)
@@ -60,7 +60,7 @@ Each example is included as a different module for proper encapsulation. Demo ve
   * [Customer Example](https://github.com/mdyd-dev/platformos-payment-examples/tree/master/modules/customer_example) - here you will learn the basics of saving your customers Credit Cards so they can be easily charged in the future without reading Credit Card details. [Demo](https://payment-examples.staging.oregon.platform-os.com/customer)
 
 
-### How Payment Module Works
+# How Payment Module Works
 
 Payment module is a backbone for processing payments with third party API's of any payment gateway that is installed as separate module.
 The entry point for any acction is `gateway_request_form` that can be used as embeded form or mutation as follows:
@@ -72,10 +72,10 @@ The entry point for any acction is `gateway_request_form` that can be used as em
 3. Based on the value of "request_type" form content defined in `modules/stripe/public/views/partials/templates/[request_type]` is rendered in the browser.
 3. On form submition request is processed with `gateway_request_form` and the code in `default_payload` is invoked:
 4. Gateway API call is invoked with `gateway_request` mutation and API notification template based on request_type
-5. Gateway response is processed with "response_mapper" defined in `modules/stripe/public/views/partials/response_mapper/[request_type]`
+5. Gateway response is processed with `response_mapper` defined in `modules/stripe/public/views/partials/response_mapper/[request_type]`
 6. Customization is created/updated/deleted based on parsed response and it's type.
 
-## GatewayRuestForm configuration
+# Gateway Ruest Form configuration
 
 When you include gateway_request_form on any page you need to pass two objects as parameters `data` and `config`: 
 
@@ -86,7 +86,7 @@ When you include gateway_request_form on any page you need to pass two objects a
 %}
 `
 
-### Config Object
+## Config Object
  
 Configuration object holds the set of configuration options.
 
@@ -102,12 +102,12 @@ There are serveral options that are common to all the reuqest types:
 Additionaly you can pass configuration options specific to the request type - for more details please refer to the documentation in of gateway module for chosen request type. The list of available request types for Stripe you can find on [ Stripe Module Readme Page ](https://github.com/mdyd-dev/platformos-payments-stripe#request-types)
 
 
-### Data Object
+## Data Object
 
-Data object is used to pass all data to the payment gateway request. Object state is validated with secret key so it can not be altered by the user before it is send to the gateway. Each gateway request requires different data sets, please check in the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#request-types] what are the options for each request type.
+Data object is used to pass all data to the payment gateway request. Object state is validated with secret key so it can not be altered by the user before it is send to the gateway. Each gateway request requires different data sets, please check in the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#request-types) what are the options for each request type.
 
 
-## Payment Model
+## Example 1. create_payment 
 
 Payment model represents money transfer from payment source (typically Credit Card) to payment receiver usually Payment Gateway.
 Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one.
@@ -143,19 +143,9 @@ The easiest way to enable payment creation on your page is by simply embeding th
 %}
 ```
 
-Data Object:
-- currency - transaction currency
-- description - transaction description visible in Stripe Checout form
-- statement_descriptor - description of the transaction visible on the bank statement
-- amount_cents - Charge amount in cents
+See the [documentation](https://github.com/mdyd-dev/platformos-payments-stripe#create_payment) for more information about `data` and `config` objects.
 
-Additinal Data object properties
-- metadata - json object with key/value pair storing extra info about this charge in Stripe
-- application_fee_cents - Application fee that should be deducted from the amount_cents and collected as a fee.
-- email - email of the customer that is being charged
-
-
-## Customizations
+# Customization of Payment Module
 
 ### Template Customization
 
@@ -211,9 +201,7 @@ In the partial you can invoke graphql mutation to update the state of any object
 ```
 
 
-## Creating a customer
-
-TBD
+# GraphQL endpoints
 
 ## Retrieving stored customer by email address
 
