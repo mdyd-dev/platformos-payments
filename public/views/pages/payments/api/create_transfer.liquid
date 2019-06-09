@@ -6,7 +6,7 @@ authorization_policies:
 - modules/payments/validate_api_signature
 ---
 {% assign destination = context.params.destination %}
-{% parse_json "payment_data" %}
+{% parse_json "data" %}
   {
     "destination": "{{ destination }}",
     "amount": "{{ context.params.amount }}",
@@ -21,16 +21,16 @@ authorization_policies:
   }
 {% endparse_json %}
 
-{% parse_json "data" %}
+{% parse_json "gateway_request_data" %}
   {
     "properties": [
        { "name": "config", "value": "{{ config | json | escape_javascript }}" },
-       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" }
+       { "name": "data", "value":  "{{ data | json | escape_javascript }}" }
      ]
   }
 {% endparse_json %}
 
-{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: data %}
+{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: gateway_request_data %}
 {% parse_json "transfer_properties" %}
   {{ g.customization_create.properties.data }}
 {% endparse_json %}
