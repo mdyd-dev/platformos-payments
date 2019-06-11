@@ -27,6 +27,7 @@ redirect_to: >
   {%- endif -%}
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
+  {%- include "modules/payments/forms/update_profile_step", form: form, params: params -%}
 default_payload: >
   {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
 ---

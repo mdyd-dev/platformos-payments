@@ -1,0 +1,4 @@
+{% graphql user = 'modules/signup/current_user' %}
+{% if user.current_user.default.start_selling != false %}
+  {% execute_query 'modules/signup/profile_step_update', id: user.current_user.id, profile_step: "2" %}
+{% endif %}
