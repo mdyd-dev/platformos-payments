@@ -15,27 +15,36 @@ authorization_policies:
 {% assign customer = cu.customizations.results.first %}
 {% assign application_fee = context.params.application_fee %}
 {% assign destination = context.params.destination %}
-{% parse_json "payment_data" %}
+
+{% parse_json "data" %}
   {
-    "id": "{{ credit_card.id }}",
     {%- if application_fee != blank -%}"application_fee": {{ application_fee }},{%- endif -%}
     {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
     "amount": "{{ context.params.amount }}",
+    "credit_card_id": "{{ credit_card.id }}",
     "currency": "USD"
   }
 {% endparse_json %}
-{% parse_json "data" %}
+
+{% parse_json "config" %}
+  {
+    "request_type": "create_payment",
+    "gateway": "stripe"
+  }
+{% endparse_json %}
+
+{% parse_json "payment_data" %}
   {
     "properties": [
-       { "name": "request_type", "value": "create_payment" },
-       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" }
+       { "name": "config", "value": "{{ config | json | escape_javascript }}" },
+       { "name": "data", "value":  "{{ data | json | escape_javascript }}" }
      ]
   }
 {% endparse_json %}
 
-{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: data %}
+{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: payment_data %}
 {% parse_json "payment_properties" %}
   {{ g.customization_create.properties.data }}
 {% endparse_json %}
