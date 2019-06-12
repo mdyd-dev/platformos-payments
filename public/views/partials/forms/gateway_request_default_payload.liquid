@@ -1,12 +1,11 @@
 {% if form %}
-  {%- assign data = params.properties_attributes.data -%}
   {%- parse_json "config" -%}{{ params.properties_attributes.config }}{%- endparse_json -%}
   {%- assign request_type = config.request_type | default: params.properties_attributes.request_type -%}
   {%- assign gateway = config.gateway | default: params.properties_attributes.gateway | default: context.exports.payments.gateway_name -%}
-  {% log gateway, type: "GATEWAY" %}
-  {% log request_type, type: "REQ Type" %}
   {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
   {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
+  {%- assign data = params.properties_attributes.data -%}
+  {%- assign data = data | add_hash_key: "indempotency_key", context.authenticity_token -%}
 
   {%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
   {%- parse_json 'response_data' -%}
