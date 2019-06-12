@@ -23,7 +23,7 @@ echo "Preparing zip file for version $next_version"
 
 git archive HEAD --prefix=payments/  --format=zip -o "tmp/$next_version.zip"
 
-confirm "Would you like to create new release tag? $next_version" && git tag $next_version
+confirm "Would you like to create new release tag? $next_version" && git tag -a $next_version
 confirm "Would you like to push local tags to remote repository?" && git push --tags
 confirm "Please upload ZIP file located in tmp/$next_version.zip in Partner Portal  https://portal.apps.near-me.com/pos_modules/53"
 
