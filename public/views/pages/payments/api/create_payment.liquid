@@ -24,8 +24,8 @@ authorization_policies:
     "source": "{{ credit_card.properties.gateway_id }}",
     "amount": "{{ context.params.amount }}",
     "credit_card_id": "{{ credit_card.id }}",
-    "currency": "USD"
-  }
+    "currency": "USD",
+    "indempotency_key": "{{ params.indempotency_key }}"
 {% endparse_json %}
 
 {% parse_json "config" %}
