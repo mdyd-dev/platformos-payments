@@ -10,7 +10,8 @@ authorization_policies:
   {
     "destination": "{{ destination }}",
     "amount": "{{ context.params.amount }}",
-    "currency": "USD"
+    "currency": "USD",
+    "indempotency_key": "{{ params.indempotency_key }}"
   }
 {% endparse_json %}
 

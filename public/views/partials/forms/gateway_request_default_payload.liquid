@@ -5,7 +5,10 @@
   {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
   {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
   {%- assign data = params.properties_attributes.data -%}
-  {%- assign data = data | add_hash_key: "indempotency_key", context.authenticity_token -%}
+  {% if data.indempotency_key == blank %}
+    {%- assign indempotency_key = 20 | random_string -%}
+    {%- assign data = data | add_hash_key: "indempotency_key", indempotency_key -%}
+  {% endif %}
 
   {%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
   {%- parse_json 'response_data' -%}
