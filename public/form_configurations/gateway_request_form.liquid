@@ -21,11 +21,11 @@ fields:
 
 redirect_to: >
   {%- if form.properties.request_errors != blank -%}
-    {{ form.config.error_path | default: context.params.current_path }}
+    {{ form.properties.config.error_path | default: context.params.current_path }}
   {%- else -%}
-    {{ form.config.success_path | default:  context.params.redirect_to | default:  context.params.current_path }}
+    {{ form.properties.config.success_path | default:  context.params.redirect_to | default:  context.params.current_path }}
   {%- endif -%}
-flash_notice: "{% if form.properties.request_errors != blank %}{{ form.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.config.success_message | default: form.success_message }}{% endif %}"
+flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.properties.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
 default_payload: >
   {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
@@ -52,7 +52,7 @@ default_payload: >
   <input type="hidden" name="signature" value="{{ signature }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
-  
+
   {%- for property in data -%}
     <input type="hidden"
       name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
