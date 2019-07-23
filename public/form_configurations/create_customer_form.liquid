@@ -47,7 +47,7 @@ callback_actions: >
       {% endparse_json %}
       {% log data.properties, type:"DATA" %}
 
-      {%- execute_query 'modules/payments/create_customization', result_name: 'g_card',
+      {%- graphql g_card = 'modules/payments/create_customization',
         data: data, form: 'modules/payments/create_credit_card_form'
       -%}
 

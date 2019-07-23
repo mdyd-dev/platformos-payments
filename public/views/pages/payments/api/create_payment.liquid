@@ -11,7 +11,7 @@ authorization_policies:
 {% graphql  cc = 'modules/payments/get_credit_card_by_id', id: context.params.credit_card_id %}
 
 {% assign credit_card = cc.customizations.results.first %}
-{% query_graph 'modules/payments/get_customer', result_name: "cu", id: credit_card.properties.customer_id %}
+{% graphql cu = 'modules/payments/get_customer', id: credit_card.properties.customer_id %}
 {% assign customer = cu.customizations.results.first %}
 {% assign application_fee = context.params.application_fee %}
 {% assign destination = context.params.destination %}

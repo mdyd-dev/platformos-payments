@@ -1,8 +1,8 @@
 {% if form %}
-  {%- query_graph 'modules/payments/get_credit_cards_by_external_id', result_name: 'g_credit_card', external_id:  params.properties_attributes.external_id -%}
+  {%- graphql g_credit_card = 'modules/payments/get_credit_cards_by_external_id', external_id:  params.properties_attributes.external_id -%}
   {% assign credit_card = g_credit_card.customizations.results.last %}
   {% assign currency = params.properties_attributes.currency | default: 'USD' %}
-  {%- execute_query 'modules/payments/create_charge', result_name: 'g',
+  {%- graphql g = 'modules/payments/create_charge',
     credit_card_id: credit_card.id,
     currency: currency,
     description: params.properties_attributes.description,

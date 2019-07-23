@@ -1,4 +1,4 @@
-{% query_graph 'modules/payments/get_accounts', result_name: "aa", id: id %}
+{% graphql aa = 'modules/payments/get_accounts',  id: id %}
 {% assign account = aa.customizations.results.first %}
 
 {%- parse_json 'data' -%}
