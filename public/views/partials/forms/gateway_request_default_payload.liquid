@@ -35,7 +35,7 @@
 
     {% if 'create_account' contains request_type %}
       {%- assign callback_name = 'modules/' | append: gateway | append: '/callbacks/' | append: request_type -%}
-      {%- include callback_name, response: response_data, customization: customization, params: params -%}
+      {%- include callback_name, response: response_data, customization: customization, params: params, indempotency_key: data.indempotency_key -%}
     {% endif %}
 
     {
