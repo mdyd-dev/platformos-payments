@@ -1,0 +1,27 @@
+---
+slug: payments/api/create_person
+method: post
+format: json
+layout_name: ''
+authorization_policies:
+- modules/payments/validate_api_signature
+---
+
+{%- log params, type: "DEBUG CREATE PERSON API" %}
+{%- assign account_id = context.params.account_id %}
+{%- assign person_id = context.params.person_id %}
+{%- assign token = context.params.person_token %}
+{%- assign gateway_api_template = "modules/stripe/create_person" -%}
+
+{% parse_json 'person_data' %}
+  {
+    "gateway_id": "{{ person_id }}",
+    "account_id": "{{ account_id }}",
+    "person_token": "{{ token }}"
+  }
+{% endparse_json %}
+
+{% log person_data, type: "PERSON DATA" %}
+
+{%- graphql person_response = 'modules/payments/gateway_request', data: person_data, api_template: gateway_api_template -%}
+{% log person_response, type: "Person Response" %}
