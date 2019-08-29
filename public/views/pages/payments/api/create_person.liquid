@@ -1,10 +1,9 @@
 ---
-slug: payments/api/create_person
+slug: payments/api/persons
 method: post
 format: json
 layout_name: ''
 authorization_policies:
-- modules/payments/validate_api_signature
 ---
 
 {%- log params, type: "DEBUG CREATE PERSON API" %}
@@ -25,3 +24,4 @@ authorization_policies:
 
 {%- graphql person_response = 'modules/payments/gateway_request', data: person_data, api_template: gateway_api_template -%}
 {% log person_response, type: "Person Response" %}
+{{ person_response | json }}
