@@ -24,4 +24,9 @@ authorization_policies:
 
 {%- graphql person_response = 'modules/payments/gateway_request', data: person_data, api_template: gateway_api_template -%}
 {% log person_response, type: "Person Response" %}
+{% parse_json response %}{{ person_response.api_call_send.response }}{% endparse_json %}
+{% if response.status == "200" %}
 {{ person_response | json }}
+{% else %}
+  {{ response | json }}
+{% endif %}

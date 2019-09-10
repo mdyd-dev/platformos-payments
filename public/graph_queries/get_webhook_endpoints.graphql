@@ -1,15 +1,18 @@
-query get_webhook_endpoints($per_page: Int = 10, $page: Int = 1, $livemode: String, $url: String) {
+query get_webhook_endpoints(
+  $per_page: Int = 10
+  $page: Int = 1
+  $livemode: String
+  $url: String
+) {
   customizations(
     per_page: $per_page
     page: $page
     name: "modules/payments/webhook_endpoint"
     is_deleted: false
-    sort: {
-      name: "created_at", order: "DESC"
-    }
+    sort: {name: "created_at", order: "ASC"}
     properties: [
-      { name: "livemode", value: $livemode },
-      { name: "url", value: $url }
+      {name: "livemode", value: $livemode}
+      {name: "url", value: $url}
     ]
   ) {
     results {

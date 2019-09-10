@@ -1,0 +1,12 @@
+---
+name: account_updated
+delay: 0
+enabled: true
+from: '<%= &default_email =%>'
+subject: Merchant Account Updated
+to: |-
+  {% graphql u = "modules/payments/get_user", id: form.user_id %}
+  {{ u.user.email }}
+trigger_condition: true
+---
+{% include "<%= &email_templates =%>account_updated" %}
