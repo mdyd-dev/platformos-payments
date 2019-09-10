@@ -1,0 +1,79 @@
+---
+name: gateway_request_async_form
+resource: modules/payments/gateway_request
+resource_owner: anyone
+authorization_policies:
+  - modules/payments/validate_signature
+fields:
+  success_message:
+    property_options:
+      virtual: true
+  signature_properties:
+    property_options:
+      virtual: true
+  properties:
+    request_type:
+    gateway:
+    config:
+    data:
+    response:
+    request_errors:
+
+redirect_to: >
+  {%- if form.properties.request_errors != blank -%}
+    {{ form.properties.config.error_path | default: context.params.current_path }}
+  {%- else -%}
+    {{ form.properties.config.success_path | default:  context.params.redirect_to | default:  context.params.current_path }}
+  {%- endif -%}
+flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.properties.config.success_message | default: form.success_message }}{% endif %}"
+callback_actions: >
+async_callback_actions:
+  delay: 0
+  content: >
+    {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
+default_payload: ''
+---
+{%- include 'modules/stripe/shared/api_credentials' -%}
+{%- assign gateway = config.gateway | default: context.exports.payments.gateway_name -%}
+{%- assign request_type = config.request_type | default: request_type -%}
+{%- assign gateway_template = config.gateway_template -%}
+{%- assign data_attribute = form_builder.fields.properties.data.name -%}
+
+{% if gateway_template == blank %}
+  {%- assign gateway_template = "modules/" | append: gateway | append: '/templates/' | append: request_type -%}
+{% endif %}
+
+{%- capture "signature" -%}
+{% include 'modules/payments/shared/calculate_signature',
+  data: data,
+  config: config
+%}
+{%- endcapture -%}
+
+{% form html-class: @request_type %}
+  <input type="hidden" name="current_path" value="{{ context.location.href }}" />
+  <input type="hidden" name="signature" value="{{ signature }}" />
+  <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
+  <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
+
+  {%- for property in data -%}
+    <input type="hidden"
+      name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
+    <input
+      type="hidden"
+      name="{{ data_attribute }}[{{ property.first }}]"
+      value="{{ property.last }}"
+      data-{{ property.first }}="{{ property.last }}"
+    />
+  {%- endfor -%}
+
+  {%- for property in config -%}
+    <input
+      type="hidden"
+      name="{{ form_builder.fields.properties.config.name  }}[{{ property.first }}]"
+      value="{{ property.last }}"
+    />
+  {%- endfor -%}
+
+  {%- include gateway_template, config: config -%}
+{% endform %}
