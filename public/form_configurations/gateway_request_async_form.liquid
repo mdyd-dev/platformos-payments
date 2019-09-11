@@ -29,9 +29,13 @@ flash_notice: "{% if form.properties.request_errors != blank %}{{ form.propertie
 callback_actions: >
 async_callback_actions:
   delay: 0
+  priority: high
   content: >
+    {% log "ASYNC GATEWAY REQUEST" %}
     {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
-default_payload: ''
+default_payload: >
+  {% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}
+
 ---
 {%- include 'modules/stripe/shared/api_credentials' -%}
 {%- assign gateway = config.gateway | default: context.exports.payments.gateway_name -%}
