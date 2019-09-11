@@ -35,6 +35,7 @@ async_callback_actions:
     {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
 default_payload: >
   {% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}
+  {}
 
 ---
 {%- include 'modules/stripe/shared/api_credentials' -%}
