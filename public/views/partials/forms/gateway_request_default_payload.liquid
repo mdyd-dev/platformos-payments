@@ -1,48 +1,48 @@
-{%- assign config = params.properties_attributes.config -%}
-{%- assign request_type = config.request_type | default: params.properties_attributes.request_type -%}
-{%- assign gateway = config.gateway | default: params.properties_attributes.gateway | default: context.exports.payments.gateway_name -%}
-{%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
-{%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
-{%- assign data = params.properties_attributes.data -%}
-{% log data, type: "DEBUG ASYNC CALLBACK DATA" %}
+{% if form %}
+  {%- parse_json config %}{{ params.properties_attributes.config }}{% endparse_json %}
+  {%- assign request_type = config.request_type | default: params.properties_attributes.request_type -%}
+  {%- assign gateway = config.gateway | default: params.properties_attributes.gateway | default: context.exports.payments.gateway_name -%}
+  {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
+  {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
+  {%- parse_json data %}{{ params.properties_attributes.data }}{% endparse_json %}
 
-{% if data.indempotency_key == blank %}
-  {%- assign indempotency_key = 20 | random_string -%}
-  {%- assign data = data | add_hash_key: "indempotency_key", indempotency_key -%}
-{% endif %}
-
-{%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
-{%- parse_json 'response_data' -%}
-  {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
-{%- endparse_json -%}
-{% log response_data, type: "---- DEBUG RESPONSE DATA ---" %}
-
-{% if response_data.errors == blank or response_data.errors == empty %}
-  {%- assign form_name = 'modules/payments/' | append: request_type | append: '_form' -%}
-  {% if request_type contains 'delete' %}
-    {%- graphql g = "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
-    {%- assign customization = g.customization_delete %}
-  {% elsif response_data.id != blank %}
-    {%- graphql g = "modules/payments/update_customization", form: form_name, data: response_data, id: response_data.id -%}
-    {%- assign customization = g.customization_update %}
-  {% else %}
-    {%- graphql g = "modules/payments/create_customization", form: form_name, data: response_data -%}
-    {%- assign customization = g.customization_create %}
+  {% if data.indempotency_key == blank %}
+    {%- assign indempotency_key = 20 | random_string -%}
+    {%- assign data = data | add_hash_key: "indempotency_key", indempotency_key -%}
   {% endif %}
 
-  {% if config.callback != blank %}
-    {%- include config.callback, response: response_data, customization: customization, params: params -%}
-  {% endif %}
+  {%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
+  {%- parse_json 'response_data' -%}
+    {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
+  {%- endparse_json -%}
 
-  {
-    "properties_attributes": {
-      "response": "{{ response.api_call_send.response.body | replace: '"', '\"' }}"
+  {% if response_data.errors == blank or response_data.errors == empty %}
+    {%- assign form_name = 'modules/payments/' | append: request_type | append: '_form' -%}
+    {% if request_type contains 'delete' %}
+      {%- graphql g = "modules/payments/delete_customization", form: form_name, id: response_data.id -%}
+      {%- assign customization = g.customization_delete %}
+    {% elsif response_data.id != blank %}
+      {%- graphql g = "modules/payments/update_customization", form: form_name, data: response_data, id: response_data.id -%}
+      {%- assign customization = g.customization_update %}
+    {% else %}
+      {%- graphql g = "modules/payments/create_customization", form: form_name, data: response_data -%}
+      {%- assign customization = g.customization_create %}
+    {% endif %}
+
+    {% if config.callback != blank %}
+      {%- include config.callback, response: response_data, customization: customization, params: params -%}
+    {% endif %}
+
+    {
+      "properties_attributes": {
+        "response": "{{ response.api_call_send.response.body | replace: '"', '\"' }}"
+      }
     }
-  }
-{% else %}
-  {
-    "properties_attributes": {
-      "request_errors": {{ response_data.errors | json }}
-     }
-  }
+  {% else %}
+    {
+      "properties_attributes": {
+        "request_errors": {{ response_data.errors | json }}
+       }
+    }
+  {% endif %}
 {% endif %}

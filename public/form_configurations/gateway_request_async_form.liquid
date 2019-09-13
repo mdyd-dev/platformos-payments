@@ -32,7 +32,7 @@ async_callback_actions:
   priority: high
   content: >
     {% log "ASYNC GATEWAY REQUEST" %}
-    {%- include "modules/payments/forms/gateway_request_default_payload", form: form, params: params -%}
+    {%- include "modules/payments/forms/gateway_async_request_default_payload", form: form, params: params -%}
 default_payload: >
   {% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}
   {}
