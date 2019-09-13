@@ -61,16 +61,27 @@ default_payload: >
   <input type="hidden" name="{{ form_builder.fields.properties.gateway.name }}" value="{{ gateway }}" />
   <input type="hidden" name="{{ form_builder.fields.properties.request_type.name }}" value="{{ request_type }}" />
 
-  {%- for property in data -%}
-    <input type="hidden"
-      name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
-    <input
-      type="hidden"
-      name="{{ data_attribute }}[{{ property.first }}]"
-      value="{{ property.last }}"
-      data-{{ property.first }}="{{ property.last }}"
-    />
+  {%- for var in data -%}
+    {%- parse_json "query" -%}{}{%- endparse_json -%}
+    {%- assign query = query | add_hash_key: var[0], var[1] %}
+
+    {%- parse_json "data" -%}{}{%- endparse_json -%}
+    {%- assign data = data | add_hash_key: "[data]", query %}
+    {% assign data = data | querify | url_decode | split: "&" %}
+
+    {% for q in data %}
+      {% assign property = q | split: "=" %}
+      <input type="hidden"
+             name="{{ form_builder.fields.signature_properties.name }}[]" value="{{ property.first}}">
+      <input
+        type="hidden"
+        name="{{ form_builder.fields.properties.data.name }}{{ property[0]| remove: "[data]" }}"
+        value="{{ property[1] }}"
+        data-{{ property[0] }}="{{ property[1] }}"
+        />
+    {%- endfor -%}
   {%- endfor -%}
+
 
   {%- for property in config -%}
     <input

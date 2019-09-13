@@ -10,4 +10,5 @@
 {%- endfor -%}
 {%- assign key = key | join: '|' -%}
 {%- assign hmac = key | compute_hmac: context.constants.payment_secret -%}
+{%- log key, type: "DEBUG KEY" -%}
 {{- hmac | strip -}}
