@@ -1,0 +1,27 @@
+---
+name: payment
+properties:
+- name: gateway_id
+  type: string
+- name: amount_cents
+  type: integer
+- name: currency
+  type: string
+- name: description
+  type: string
+- name: statement_descriptor
+  type: string
+- name: account_id
+  type: string
+- name: external_id
+  type: string
+- name: destination
+  type: string
+- name: paid_at
+  type: datetime
+- name: failed_at
+  type: datetime
+- name: response_errors
+  type: string
+- name: state
+  type: string

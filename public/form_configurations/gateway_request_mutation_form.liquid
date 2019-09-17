@@ -13,5 +13,9 @@ fields:
     request_errors:
 callback_actions: >
 default_payload: >
-  {% include "modules/payments/forms/gateway_request_default_payload" %}
+  {% if form %}
+    {%- parse_json config %}{{ params.properties_attributes.config }}{% endparse_json %}
+    {%- parse_json data %}{{ params.properties_attributes.data }}{% endparse_json %}
+    {%- include "modules/payments/forms/gateway_request_default_payload", params: params, config: config, data: data -%}
+  {% endif %}
 ---

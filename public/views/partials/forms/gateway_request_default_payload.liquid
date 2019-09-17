@@ -1,10 +1,7 @@
-{% if form %}
-  {%- parse_json config %}{{ params.properties_attributes.config }}{% endparse_json %}
   {%- assign request_type = config.request_type | default: params.properties_attributes.request_type -%}
   {%- assign gateway = config.gateway | default: params.properties_attributes.gateway | default: context.exports.payments.gateway_name -%}
   {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
   {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
-  {%- parse_json data %}{{ params.properties_attributes.data }}{% endparse_json %}
 
   {% if data.indempotency_key == blank %}
     {%- assign indempotency_key = 20 | random_string -%}
@@ -45,4 +42,3 @@
        }
     }
   {% endif %}
-{% endif %}

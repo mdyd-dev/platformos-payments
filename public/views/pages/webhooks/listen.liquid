@@ -12,7 +12,6 @@ authorization_policies:
 {%- assign webhook_listen_url = "https://" | append: context.location.host | append: "/webhooks/listen" %}
 {% graphql g = 'modules/payments/get_webhook_endpoints', livemode: context.exports.payment.livemode, url: webhook_listen_url %}
 {%- assign last_webhook_config = g.customizations.results.last %}
-{% log context.post_params, type: "DEBUG post params"  %}
 {%- capture "signed_payload" -%}{{ t }}.{{ context.post_params }}{% endcapture %}
 {%- assign webhook_secret = last_webhook_config.properties.secret %}
 {% log webhook_secret, type: "DEBUG webhooks secret"  %}
