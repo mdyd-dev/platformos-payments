@@ -1,5 +1,5 @@
 ---
-name: payment
+name: payout
 properties:
 - name: gateway_id
   type: string
