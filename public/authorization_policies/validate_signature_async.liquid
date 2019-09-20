@@ -9,4 +9,6 @@ flash_alert: Provided properties can not be modified.
     data: context.params.form.properties_attributes.default_data
 -%}{%- endcapture -%}
 {%- assign sig = context.params.signature | strip -%}
+{%- log sig, type: "SIGNATURE:   " -%}
+{%- log signature, type: "SIGNATUR2E:   " -%}
 {% if signature != blank and sig == signature %}true{% endif %}

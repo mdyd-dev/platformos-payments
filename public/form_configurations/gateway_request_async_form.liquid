@@ -46,6 +46,7 @@ default_payload: >
   }
 
 ---
+HELLO
 {%- include 'modules/stripe/shared/api_credentials' -%}
 {%- assign gateway = config.gateway | default: context.exports.payments.gateway_name -%}
 {%- assign request_type = config.request_type | default: request_type -%}
@@ -62,6 +63,7 @@ default_payload: >
   config: config
 %}
 {%- endcapture -%}
+{{ signature }}
 
 {% form html-class: @request_type %}
   <input type="hidden" name="current_path" value="{{ context.location.href }}" />
@@ -80,7 +82,7 @@ default_payload: >
     {% for q in properties %}
       {% assign property = q | split: "=" %}
       <input
-        type="text"
+        type="hidden"
         name="{{ form_builder.fields.properties.data.name | remove: "[data]" }}{{ property[0] }}"
         value="{{ property[1] }}"
         data-{{ property[0] }}="{{ property[1] }}"
