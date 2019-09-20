@@ -1,0 +1,30 @@
+---
+name: create_payout_form
+resource: modules/payments/payout
+resource_owner: anyone
+flash_notice: "Successfully created!"
+flash_alert: "Payout failed!"
+fields:
+  properties:
+    gateway_id:
+      validation:
+        presence: true
+    amount_cents:
+      validation:
+        presence: true
+    currency:
+    description:
+    external_id:
+    statement_descriptor:
+    external_id:
+    account_id:
+    response_errors:
+      validation:
+        absence: true
+    state:
+    paid_at:
+    failed_at:
+default_payload: >
+authorization_policies:
+---
+
