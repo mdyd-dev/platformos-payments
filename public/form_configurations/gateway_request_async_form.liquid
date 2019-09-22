@@ -46,7 +46,6 @@ default_payload: >
   }
 
 ---
-HELLO
 {%- include 'modules/stripe/shared/api_credentials' -%}
 {%- assign gateway = config.gateway | default: context.exports.payments.gateway_name -%}
 {%- assign request_type = config.request_type | default: request_type -%}
@@ -63,7 +62,6 @@ HELLO
   config: config
 %}
 {%- endcapture -%}
-{{ signature }}
 
 {% form html-class: @request_type %}
   <input type="hidden" name="current_path" value="{{ context.location.href }}" />

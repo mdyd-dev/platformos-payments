@@ -6,7 +6,8 @@ flash_alert: Provided properties can not be modified.
 {% log context.params.form.properties_attributes.default_data, type: "DEFAULT DATA" %}
 {%-
   capture "signature" -%}{%- include 'modules/payments/shared/calculate_signature',
-    data: context.params.form.properties_attributes.default_data
+    data: context.params.form.properties_attributes.default_data,
+    config: context.params.form.properties_attributes.config
 -%}{%- endcapture -%}
 {%- assign sig = context.params.signature | strip -%}
 {%- log sig, type: "SIGNATURE:   " -%}
