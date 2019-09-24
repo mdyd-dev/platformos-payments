@@ -26,6 +26,12 @@ redirect_to: >
   {%- endif -%}
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.properties.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
+async_callback_actions:
+  delay: 0
+  content: >
+    {% if form.properties.config.async_callback != blank %}
+      {%- include form.properties.config.async_callback with form -%}
+    {% endif %}
 default_payload: >
   {% if form %}
     {% log "DEFAULT PAYLOAD GATEWAY REQUEST FORM" %}
