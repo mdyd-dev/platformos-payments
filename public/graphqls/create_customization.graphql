@@ -1,0 +1,6 @@
+mutation create_customization($data: CustomizationInputType!, $form: String) {
+  customization_create(customization: $data, form_configuration_name: $form) {
+    id
+    properties
+  }
+}

@@ -18,7 +18,6 @@ fields:
     data:
     response:
     request_errors:
-
 redirect_to: >
   {%- if form.properties.request_errors != blank -%}
     {{ form.properties.config.error_path | default: context.params.current_path }}
@@ -27,6 +26,19 @@ redirect_to: >
   {%- endif -%}
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.properties.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
+  {% assign object_id = params.properties_attributes.data.id %}
+  {% if object_id != blank %}
+    {% parse_json "object_data" %}
+      { "properties": [ { "name": "queued", "value": "true" } ]}
+    {% endparse_json %}
+    {% log object_data, type: "data" %}
+    {%- graphql g = "modules/payments/update_customization",
+      data: object_data,
+      id: object_id
+    -%}
+  {% endif %}
+  {% log object_id, type: "DEBUG" %}
+  {% log g, type: "DEBUG GggGG" %}
 async_callback_actions:
   delay: 0
   priority: high
