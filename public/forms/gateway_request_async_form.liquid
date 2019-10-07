@@ -16,6 +16,9 @@ fields:
     gateway:
     config:
     data:
+    default_data:
+      property_options:
+        virtual: true
     response:
     request_errors:
 redirect_to: >
@@ -37,8 +40,6 @@ callback_actions: >
       id: object_id
     -%}
   {% endif %}
-  {% log object_id, type: "DEBUG" %}
-  {% log g, type: "DEBUG GggGG" %}
 async_callback_actions:
   delay: 0
   priority: high
