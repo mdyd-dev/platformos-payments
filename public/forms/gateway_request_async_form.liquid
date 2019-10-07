@@ -45,6 +45,7 @@ async_callback_actions:
   content: >
     {%- assign config = params.properties_attributes.config -%}
     {%- assign data = params.properties_attributes.data -%}
+
     {%- include "modules/payments/forms/gateway_request_default_payload",  params: params, data: data, config: config -%}
 default_payload: >
   {% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}

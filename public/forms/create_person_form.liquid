@@ -1,11 +1,9 @@
 ---
-name: webhook_update_account_form
-resource: modules/payments/account
+name: create_person_form
+resource: modules/payments/person
 resource_owner: anyone
 fields:
   user_id:
-    validation:
-      presence: false
   properties:
     gateway_id:
       validation:
@@ -13,12 +11,11 @@ fields:
     external_id:
       validation:
         presence: true
-    state:
-      validation:
-        presence: true
+    state: {}
+    queued: {}
+    last_error: {}
+    last_errors: {}
     data: {}
 callback_actions: >
 default_payload: >
-email_notifications:
- - modules/payments/account_updated
 ---

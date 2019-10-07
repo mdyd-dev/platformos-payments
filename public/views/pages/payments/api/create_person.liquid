@@ -9,24 +9,47 @@ authorization_policies:
 {%- log params, type: "DEBUG CREATE PERSON API" %}
 {%- assign account_id = context.params.account_id %}
 {%- assign person_id = context.params.person_id %}
+{%- assign person_gateway_id = context.params.person_gateway_id %}
 {%- assign token = context.params.person_token %}
 {%- assign gateway_api_template = "modules/stripe/create_person" -%}
 
-{% parse_json 'person_data' %}
+{%- parse_json 'config' -%}
   {
-    "gateway_id": "{{ person_id }}",
+    "request_type": "create_person",
+    "gateway": "stripe"
+
+  }
+{%- endparse_json -%}
+
+{%- parse_json 'data' -%}
+  {
+    "id": "{{ person_id }}",
+    "external_id": "{{ account_id }}",
+    "gateway_id": "{{ person_gateway_id }}",
     "account_id": "{{ account_id }}",
     "person_token": "{{ token }}"
   }
+{%- endparse_json -%}
+
+{% parse_json "account_data" %}
+  {
+    "properties": [
+       { "name": "config", "value": "{{ config | json | escape_javascript }}" },
+       { "name": "data", "value":  "{{ data | json | escape_javascript }}" }
+     ]
+  }
 {% endparse_json %}
 
-{% log person_data, type: "PERSON DATA" %}
+{% graphql g = "modules/payments/create_customization", form: "modules/payments/gateway_request_mutation_form", data: account_data %}
+{% log g, type: "person object response" %}
 
-{%- graphql person_response = 'modules/payments/gateway_request', data: person_data, api_template: gateway_api_template -%}
-{% log person_response, type: "Person Response" %}
-{% parse_json response %}{{ person_response.api_call_send.response }}{% endparse_json %}
-{% if response.status == "200" %}
-{{ person_response | json }}
+{% assign error = g.customization_create.properties.request_errors %}
+{% if error == blank %}
+  { "status": "200" }
 {% else %}
-  {{ response | json }}
+  {
+    "error": {
+      "message": "{{ error }}"
+    }
+  }
 {% endif %}

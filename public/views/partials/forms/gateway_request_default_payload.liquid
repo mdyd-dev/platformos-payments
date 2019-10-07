@@ -9,10 +9,11 @@
   {% endif %}
 
   {%- graphql response = 'modules/payments/gateway_request', data: data, api_template: gateway_api_template -%}
+  {% log response, type: "PAYMENT RAW RRESPONSE" %}
   {%- parse_json 'response_data' -%}
     {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
   {%- endparse_json -%}
-  {% log response_data, type: "\n\nPAYMENT GATEWAY RRESPONSE" %}
+  {% log response_data, type: "\n\nPAYMENT GATEWAY PARSED RRESPONSE" %}
   {% if response_data.errors == blank or response_data.errors == empty %}
     {%- assign form_name = 'modules/payments/' | append: request_type | append: '_form' -%}
     {% if request_type contains 'delete' %}
@@ -32,7 +33,6 @@
     {% if config.callback != blank %}
       {%- include config.callback, response: response_data, customization: customization, params: params -%}
     {% endif %}
-
     {
       "properties_attributes": {
         "response": "{{ response.api_call_send.response.body | replace: '"', '\"' }}"
