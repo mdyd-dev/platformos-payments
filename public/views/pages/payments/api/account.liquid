@@ -1,0 +1,11 @@
+---
+slug: payments/api/account
+method: get
+format: json
+layout_name: ''
+authorization_policies:
+---
+
+{%- assign account_id = context.params.slugs %}
+{% graphql g_account = "modules/payments/get_accounts", id: account_id %}
+{{ g_account.customizations.results.first | json }}

@@ -10,7 +10,9 @@ query get_accounts($id: ID!) {
       gateway_id: property(name: "gateway_id")
       external_id: property(name: "external_id")
       queued: property(name: "queued")
-      properties
+      data: property(name: "data")
+      last_errors: property(name: "last_errors")
+      last_error: property(name: "last_error")
     }
   }
 }

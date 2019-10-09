@@ -4,7 +4,7 @@
 {%- parse_json 'data' -%}
   {
     "id": "{{ account.id }}",
-    "gateway_id": "{{ account.properties.gateway_id }}"
+    "gateway_id": "{{ account.gateway_id }}"
   }
 {%- endparse_json -%}
 
