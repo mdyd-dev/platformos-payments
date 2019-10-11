@@ -15,11 +15,13 @@ authorization_policies:
 {%- query_graph 'modules/payments/get_customer', result_name: "cu", id: credit_card.properties.customer_id -%}
 {%- assign customer = cu.customizations.results.first -%}
 {%- assign application_fee = context.params.application_fee_cents -%}
+{%- assign description = context.params.description -%}
 {%- assign destination = context.params.destination -%}
 {%- parse_json "payment_data" -%}
   {
     "id": "{{ credit_card.id }}",
     {%- if application_fee != blank -%}"application_fee": {{ application_fee }},{%- endif -%}
+    {%- if description != blank -%}"description": "{{ description }}",{%- endif -%}
     {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
