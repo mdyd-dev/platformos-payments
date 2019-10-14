@@ -17,12 +17,14 @@ authorization_policies:
 {%- assign application_fee = context.params.application_fee_cents -%}
 {%- assign description = context.params.description -%}
 {%- assign destination = context.params.destination -%}
+{%- assign idempotence_key = context.params.idempotence_key -%}
 {%- parse_json "payment_data" -%}
   {
     "id": "{{ credit_card.id }}",
     {%- if application_fee != blank -%}"application_fee": {{ application_fee }},{%- endif -%}
     {%- if description != blank -%}"description": "{{ description }}",{%- endif -%}
     {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
+    {%- if idempotence_key != blank -%}"idempotence_key": "{{ idempotence_key }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
     "amount": {{ context.params.amount_cents }},
