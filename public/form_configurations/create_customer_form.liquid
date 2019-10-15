@@ -35,13 +35,10 @@ callback_actions: >
             { "name": "external_id", "value": "{{ form.properties.external_id }}" },
             { "name": "gateway_id", "value": "{{  form.properties.default_source }}" },
             { "name": "gateway_customer_id", "value": "{{  form.properties.gateway_id }}" },
-            { "name": "email", "value": "{{ form.properties.email }}" },
-            { "name": "description", "value": "{{ form.properties.description }}" },
             { "name": "brand", "value": "{{ form.properties.card_brand }}" },
             { "name": "exp_month", "value": "{{ form.properties.card_exp_month }}" },
             { "name": "exp_year", "value": "{{ form.properties.card_exp_year }}" },
-            { "name": "last4", "value": "{{ form.properties.card_last4 }}" },
-            { "name": "skip_credit_card_creation", "value": "false" }
+            { "name": "last4", "value": "{{ form.properties.card_last4 }}" }
           ]
         }
       {% endparse_json %}
