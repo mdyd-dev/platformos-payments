@@ -30,8 +30,10 @@ redirect_to: >
   {%- endif -%}
 flash_notice: "{% if form.properties.request_errors != blank %}{{ form.properties.config.error_message | default: form.properties.request_errors }}{% else %}{{ form.properties.config.success_message | default: form.success_message }}{% endif %}"
 callback_actions: >
+  {%- assign config = params.properties_attributes.config -%}
   {%- if config.sync_callback != blank -%}
     {%- include config.sync_callback, params: params -%}
+    }
   {%- endif -%}
 async_callback_actions:
   delay: 0
