@@ -206,7 +206,7 @@ In this example, you will learn how to invoke any gateway request as a callback 
 
 ### Template customization
 
-When the gateway_request_form is included on a page, a predefined template for gthe iven request_type is rendered. For the Stripe module, you will find all those templates [here](https://github.com/mdyd-dev/platformos-payments-stripe/tree/master/public/views/partials/templates). If you need to customize them, use the `gateway_template` configuration option to pass the partial view of your choice.
+When the gateway_request_form is included on a page, a predefined template for the given request_type is rendered. For the Stripe module, you will find all those templates [here](https://github.com/mdyd-dev/platformos-payments-stripe/tree/master/public/views/partials/templates). If you need to customize them, use the `gateway_template` configuration option to pass the partial view of your choice.
 
 Example:
 
