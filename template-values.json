@@ -1,6 +1,6 @@
 {
   "payment_secret": "secret_phrase_used_for_encryption",
   "livemode": false,
-  "default_email": "PlanetKraken <Info@PlanetKraken.com>",
+  "default_email": "support@golfstix.com",
   "email_templates": "modules/payments/emails/"
 }
