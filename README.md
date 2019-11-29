@@ -16,7 +16,8 @@ A module for processing payments in platformOS.
 - [x] add authorization policies where needed
 - [x] add API call for capturing authorized charges
 - [x] webhook support
-- [x] create merchant account using a form
+- [x] create account using a custom form
+- [x] create account with Stripe Express
 - [x] graph queries to fetch all defined modules
 - [x] proper error handling
 - [x] token charge
