@@ -4,7 +4,7 @@
 {%- assign gateway_api_template = "modules/" | append: gateway | append: '/' | append: request_type -%}
 {%- assign response_parser = "modules/" | append: gateway | append: '/response_mapper/' | append: request_type -%}
 {%- assign data = params.properties_attributes.data -%}
-{% log data, type: "DEBUG ASYNC CALLBACK DATA" %}
+{% comment %}{% log data, type: "DEBUG ASYNC CALLBACK DATA" %}{% endcomment %}
 
 {% if data.indempotency_key == blank %}
   {%- assign indempotency_key = 20 | random_string -%}
@@ -15,7 +15,7 @@
 {%- parse_json 'response_data' -%}
   {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
 {%- endparse_json -%}
-{% log response_data, type: "---- DEBUG RESPONSE DATA ---" %}
+{% comment %}{% log response_data, type: "---- DEBUG RESPONSE DATA ---" %}{% endcomment %}
 
 {% if response_data.errors == blank or response_data.errors == empty %}
   {%- assign form_name = 'modules/payments/' | append: request_type | append: '_form' -%}

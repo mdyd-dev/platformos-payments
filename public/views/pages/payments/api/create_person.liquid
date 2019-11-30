@@ -6,7 +6,7 @@ layout_name: ''
 authorization_policies:
 ---
 
-{%- log params, type: "DEBUG CREATE PERSON API" %}
+{%- comment -%}{%- log params, type: "DEBUG CREATE PERSON API" %}{%- endcomment -%}
 {%- assign account_id = context.params.account_id %}
 {%- assign person_id = context.params.person_id %}
 {%- assign token = context.params.person_token %}
@@ -20,10 +20,10 @@ authorization_policies:
   }
 {% endparse_json %}
 
-{% log person_data, type: "PERSON DATA" %}
+{% comment %}{% log person_data, type: "PERSON DATA" %}{% endcomment %}
 
 {%- graphql person_response = 'modules/payments/gateway_request', data: person_data, api_template: gateway_api_template -%}
-{% log person_response, type: "Person Response" %}
+{% comment %}{% log person_response, type: "Person Response" %}{% endcomment %}
 {% parse_json response %}{{ person_response.api_call_send.response }}{% endparse_json %}
 {% if response.status == "200" %}
 {{ person_response | json }}

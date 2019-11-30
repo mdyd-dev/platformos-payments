@@ -24,7 +24,7 @@ fields:
     card_exp_year:
     card_last4:
 callback_actions: >
-  {% log form, type:"form" %}
+  {% comment %}{% log form, type:"form" %}{% endcomment %}
   {% if form.properties.default_source != blank %}
     {% if form.properties.skip_credit_card_creation != "true" %}
       {% comment %}  TODO move to Stripe module  {% endcomment %}
@@ -42,13 +42,13 @@ callback_actions: >
           ]
         }
       {% endparse_json %}
-      {% log data.properties, type:"DATA" %}
+      {% comment %}{% log data.properties, type:"DATA" %}{% endcomment %}
 
       {%- graphql g_card = 'modules/payments/create_customization',
         data: data, form: 'modules/payments/create_credit_card_form'
       -%}
 
-      {% log g_card, type: "credit_card" %}
+      {% comment %}{% log g_card, type: "credit_card" %}{% endcomment %}
     {% endif %}
   {% endif %}
 default_payload: >

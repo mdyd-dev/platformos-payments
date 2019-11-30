@@ -23,6 +23,8 @@ flash_alert: Provided properties can not be modified.
 {%- assign now = "now" | to_time -%}
 {%- assign expires_in_minus_now = now | time_diff: expires_in -%}
 
+{% comment %}
 {% log signature, type: "sig1" %}
 {% log passed_signature, type: "sig2" %}
+{% endcomment %}
 {% if passed_signature == signature and expires_in_minus_now > 0 %}true{% endif %}

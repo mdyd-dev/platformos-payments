@@ -3,13 +3,15 @@ name: validate_signature_async
 redirect_to: "{{ context.params.redirect_to }}"
 flash_alert: Provided properties can not be modified.
 ---
-{% log context.params.form.properties_attributes.default_data, type: "DEFAULT DATA" %}
+{% comment %}{% log context.params.form.properties_attributes.default_data, type: "DEFAULT DATA" %}{% endcomment %}
 {%-
   capture "signature" -%}{%- include 'modules/payments/shared/calculate_signature',
     data: context.params.form.properties_attributes.default_data,
     config: context.params.form.properties_attributes.config
 -%}{%- endcapture -%}
 {%- assign sig = context.params.signature | strip -%}
+{%- comment -%}
 {%- log sig, type: "SIGNATURE:   " -%}
 {%- log signature, type: "SIGNATUR2E:   " -%}
+{%- endcomment -%}
 {% if signature != blank and sig == signature %}true{% endif %}

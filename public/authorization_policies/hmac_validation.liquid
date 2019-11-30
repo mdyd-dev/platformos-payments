@@ -13,7 +13,9 @@ name: hmac_validation
 {%- assign now = "now" | to_time -%}
 {%- assign expires_in_minus_now = now | time_diff: expires_in -%}
 {%- assign computed_hmac = key | compute_hmac: context.constants.partner_portal_secret -%}
+{% comment %}
 {% log key, type: "key" %}
 {% log computed_hmac, type: "computed_hmac" %}
 {% log context.params.signature , type: "sig2" %}
+{% endcomment %}
 {% if context.params.signature == computed_hmac and expires_in_minus_now > 0 %}true{% endif %}

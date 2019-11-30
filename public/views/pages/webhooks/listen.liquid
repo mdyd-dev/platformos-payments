@@ -14,10 +14,12 @@ authorization_policies:
 {%- assign last_webhook_config = g.customizations.results.last %}
 {%- capture "signed_payload" -%}{{ t }}.{{ context.post_params }}{% endcapture %}
 {%- assign webhook_secret = last_webhook_config.properties.secret %}
-{% log webhook_secret, type: "DEBUG webhooks secret"  %}
+{% comment %}{% log webhook_secret, type: "DEBUG webhooks secret"  %}{% endcomment %}
 {%- assign signed_payload_hmac = signed_payload | compute_hmac: webhook_secret %}
+{% comment %}
 {% log secret, type: "DEBUG secret" %}
 {% log signed_payload_hmac, type: "DEBUG signed_payload_hmac" %}
+{% endcomment %}
 {% if secret == signed_payload_hmac %}
   {% parse_json 'webhook_data' %}{{ context.post_params }}{% endparse_json %}
   {%- assign webhook_name = params.type | replace: ".", "_" -%}

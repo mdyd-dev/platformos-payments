@@ -43,10 +43,10 @@ async_callback_actions:
     {%- assign data = params.properties_attributes.data -%}
     {%- include "modules/payments/forms/gateway_request_default_payload",  params: params, data: data, config: config -%}
 default_payload: >
-  {% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}
+  {% comment %}{% log "ASYNC GATEWAY REQUEST FORM SUBMITTED" %}{% endcomment %}
   {
     {% if form %}
-      {% log params.properties_attributes.default_data , type: "HELLO DF" %}
+      {% comment %}{% log params.properties_attributes.default_data , type: "HELLO DF" %}{% endcomment %}
       "properties_attributes": {
         "data" : {{ params.properties_attributes.default_data | json }}
       }
