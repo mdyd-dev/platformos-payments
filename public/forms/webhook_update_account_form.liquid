@@ -18,6 +18,9 @@ fields:
         presence: true
     data: {}
 callback_actions: >
+async_callback_actions:
+  content: >
+    {% include "<%= &webhook_update_account_async_callback =%>" %}
 default_payload: >
 email_notifications:
  - modules/payments/account_updated

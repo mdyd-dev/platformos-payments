@@ -2,5 +2,6 @@
   "payment_secret": "secret_phrase_used_for_encryption",
   "livemode": false,
   "default_email": "test@example.com",
-  "email_templates": "modules/payments/emails/"
+  "email_templates": "modules/payments/emails/",
+  "webhook_update_account_async_callback": "modules/payments/webhook_update_account_async_callback"
 }

@@ -27,6 +27,8 @@ authorization_policies:
   {%- assign gateway = context.exports.payments.gateway_name -%}
   {%- assign webhook_processor = "modules/stripe/webhook_processors/" | append: webhook_name -%}
   {%- include webhook_processor, data: webhook_data.data.object -%}
+{% else %}
+  {% log 'DEBUG secret not match', type: 'payments_webhook_listen' %}
 {% endif %}
 
 
