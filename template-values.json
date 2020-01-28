@@ -3,5 +3,5 @@
   "livemode": false,
   "default_email": "test@example.com",
   "email_templates": "modules/payments/emails/",
-  "webhook_update_account_async_callback": "modules/payments/webhook_update_account_async_callback"
+  "webhook_update_account_async_callback": "payments/webhook_update_account_async_callback"
 }
