@@ -28,6 +28,7 @@ authorization_policies:
   {%- assign webhook_processor = "modules/stripe/webhook_processors/" | append: webhook_name -%}
   {%- include webhook_processor, data: webhook_data.data.object -%}
 {% else %}
+  {% response_status 403 %}
   {% log 'DEBUG secret not match', type: 'payments_webhook_listen' %}
 {% endif %}
 
