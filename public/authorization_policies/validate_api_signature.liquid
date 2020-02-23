@@ -3,7 +3,7 @@ name: validate_api_signature
 redirect_to: "{{ context.params.redirect_to }}"
 flash_alert: Provided properties can not be modified.
 ---
-{%- assign except_params = 'signature|controller|action|page|slug|slugs|slug2|slug3' | split: "|" -%}
+{%- assign except_params = 'signature|controller|action|page|slug|slugs|slug2|slug3|format' | split: "|" -%}
 {%- assign signature_properties = '' | split: ',' -%}
 {%- for param in context.params -%}
   {%- unless except_params contains param.first -%}
@@ -11,7 +11,7 @@ flash_alert: Provided properties can not be modified.
   {%- endunless -%}
 {% endfor -%}
 
-{%- capture "signature" -%}{%- 
+{%- capture "signature" -%}{%-
   include 'modules/payments/shared/calculate_signature',
     data: context.params,
     signature_properties: signature_properties,
