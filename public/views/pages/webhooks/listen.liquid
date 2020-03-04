@@ -17,10 +17,8 @@ authorization_policies:
 {% endif %}
 {%- capture "signed_payload" -%}{{ t }}.{{ context.post_params }}{% endcapture %}
 {%- assign webhook_secret = last_webhook_config.properties.secret %}
-{% log webhook_secret, type: "DEBUG webhooks secret"  %}
 {%- assign signed_payload_hmac = signed_payload | compute_hmac: webhook_secret %}
-{% log secret, type: "DEBUG secret" %}
-{% log signed_payload_hmac, type: "DEBUG signed_payload_hmac" %}
+
 {% if secret == signed_payload_hmac %}
   {% parse_json 'webhook_data' %}{{ context.post_params }}{% endparse_json %}
   {%- assign webhook_name = params.type | replace: ".", "_" -%}
