@@ -20,6 +20,7 @@ authorization_policies:
 {% assign signed_payload = signature_hash.t | append: '.' | append: params_json %}
 {% assign signature = signed_payload | compute_hmac: context.constants.stripe_webhook_secret  %}
 
+
 {% if signature == signature_hash.v1 %}
   {% if params.type == 'account.updated' %}
     {% include 'modules/payments/webhooks/account_updated' params: params %}
