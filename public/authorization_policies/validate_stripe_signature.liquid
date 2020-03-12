@@ -1,0 +1,6 @@
+---
+name: validate_stripe_signature
+---
+{% if context.headers['HTTP_STRIPE_SIGNATURE'] %}
+  true
+{% endif %}

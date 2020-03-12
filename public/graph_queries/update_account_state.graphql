@@ -1,0 +1,17 @@
+mutation update_account_state($id: ID!, $state: String) {
+  model_update(
+    id: $id
+    model: {
+      model_schema_name: "modules/payments/account"
+      properties: [{ name: "state", value: $state }]
+    }
+    form_configuration_name: "modules/payments/update_account_state_form"
+  ) {
+    id
+    state: property(name: "state")
+    type: property(name: "type")
+    gateway_id: property(name: "gateway_id")
+    created_at
+    updated_at
+  }
+}

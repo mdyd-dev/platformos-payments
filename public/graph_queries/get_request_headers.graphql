@@ -1,0 +1,6 @@
+query get_request_headers {
+  request {
+    headers
+    body
+  }
+}

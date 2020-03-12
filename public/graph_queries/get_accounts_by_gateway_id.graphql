@@ -1,0 +1,18 @@
+query get_accounts_by_gateway_id($gateway_id: String!) {
+  customizations: models(
+    per_page: 1
+    filter: {
+      name: { value: "modules/payments/account" }
+      deleted_at: { exists: false }
+      properties: [
+        { name: "gateway_id", value: $gateway_id }
+      ]
+    }
+  ) {
+    results {
+      id
+      gateway_id: property(name: "gateway_id")
+      properties
+    }
+  }
+}

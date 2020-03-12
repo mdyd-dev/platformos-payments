@@ -3,25 +3,25 @@ slug: payments/webhooks/listen
 method: post
 layout_name: ''
 authorization_policies:
+  - modules/payments/validate_stripe_signature
 ---
-{% assign stripe_signature = context.headers.HTTP_STRIPE_SIGNATURE | split: "," %}
-{% assign t = stripe_signature[0] | split: '=' | last %}
-{% assign secret = stripe_signature[1] | split: '=' | last %}
-{{ t }}
+{% graphql request = 'modules/payments/get_request_headers' %}
+{% assign header = request.request.headers['HTTP_STRIPE_SIGNATURE'] | split: ',' %}
+{% capture signature_json %}
+{
+  {% for element in header  %}
+    {% assign kv = element | split: '=' %}
+    "{{ kv[0] }}": "{{ kv[1] }}"{% if forloop.last != true %},{% endif %}
+  {% endfor %}
+}
+{% endcapture %}
+{% assign signature_hash = signature_json | to_hash %}
+{% assign params_json = request.request.body %}
+{% assign signed_payload = signature_hash.t | append: '.' | append: params_json %}
+{% assign signature = signed_payload | compute_hmac: context.constants.stripe_webhook_secret  %}
 
-{%- include 'modules/stripe/shared/api_credentials' -%}
-{% assign webhook_listen_url = "https://" | append: context.location.host | append: "/payments/webhooks/listen" %}
-{% graphql g = 'modules/payments/get_webhook_endpoints', livemode: context.exports.payment.livemode, url: webhook_listen_url %}
-{% assign last_webhook_config = g.customizations.results.last %}
-{% assign webhook_secret = last_webhook_config.properties.secret %}
-
-{% assign json_params = params | remove_hash_key: "slug3" | json %}
-{{ json_params }}
-
-{% assign signed_payload = t | append: '.' | append: json_params %}
-webhook_secret {{ webhook_secret }}
-{% assign signed_payload_hmac = signed_payload | compute_hmac: webhook_secret %}
-t {{ t }}
-secret {{ secret }}
-{{ json_params }}
-{{ signed_payload_hmac }}
+{% if signature == signature_hash.v1 %}
+  {% if params.type == 'account.updated' %}
+    {% include 'modules/payments/webhooks/account_updated' params: params %}
+  {% endif %}
+{% endif %}

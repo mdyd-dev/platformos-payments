@@ -1,0 +1,11 @@
+---
+name: update_account_state_form
+resource: modules/payments/account
+resource_owner: anyone
+fields:
+  properties:
+    state:
+      validation:
+        presence:
+          message: STATE_REQUIRED
+---

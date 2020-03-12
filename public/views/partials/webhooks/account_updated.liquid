@@ -1,0 +1,41 @@
+{% log 'Logs for: account.updated event webhook' %}
+{% assign response_data = params.data.object %}
+
+{% comment %} Check if user exists {% endcomment %}
+{% assign stripe_user_id = response_data.id %}
+
+{% query_graph "modules/payments/get_accounts_by_gateway_id", gateway_id: stripe_user_id %}
+{% assign connected_account = g.customizations.results.last %}
+
+{% if connected_account != blank %}
+
+  {% comment %} Check if there are needed capabilities and no pending_verifications {% endcomment %}
+  {% assign needed_capabilities = response_data.capabilities.transfers %}
+  {% assign pending_verification = response_data.requirements.pending_verification %}
+  {% assign currently_due = response_data.requirements.currently_due %}
+
+
+  {% comment %} Set account state {% endcomment %}
+  {% if needed_capabilities == 'active' and pending_verification.size == 0 and currently_due.size == 0 %}
+    {% comment %} {% assign status = 'TRANSFERS_CAPABILITY_VERIFIED' %} {% endcomment %}
+    {% assign state = "verified" %}
+  {% else %}
+    {% comment %} {% assign status = 'UPDATE_NEEDED' %} {% endcomment %}
+    {% assign state = "pending" %}
+  {% endif %}
+
+  {% graphql update = 'modules/payments/update_account_state', id: connected_account.id, state: state %}
+
+  {% log update %}
+
+{% else %}
+  {% log 'Error: Connected account doesn`t exist' %}
+  {% comment %}
+    Connected account doesn't exist. Let Webhook know that there's some problem by sending 404 status.
+    One of reasons maybe during account create platform os will not finish creating new connected_stripe_account.
+    So then webhook will be fired after couple of minutes again.
+  {% endcomment %}
+  {%- response_status 404 -%}
+{% endif %}
+{% log 'End Logs for: account.updated event webhook' %}
+

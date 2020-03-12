@@ -1,0 +1,23 @@
+---
+name: create_connected_account_form
+resource: modules/payments/account
+resource_owner: anyone
+fields:
+  properties:
+    state:
+      validation:
+        presence:
+          message: STATE_REQUIRED
+    type:
+      validation:
+        presence:
+          message: TYPE_REQUIRED
+    external_id:
+      validation:
+        presence:
+          message: EXTERNAL_ID_REQUIRED
+    gateway_id:
+      validation:
+        presence:
+          message: GATEWAY_ID_REQUIRED
+---

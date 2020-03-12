@@ -1,0 +1,26 @@
+mutation create_account(
+  $gateway_id: String
+  $external_id: String!
+  $type: String!
+  $state: String!
+) {
+  model_create(
+    model: {
+      model_schema_name: "modules/payments/account"
+      properties: [
+        { name: "type", value: $type }
+        { name: "external_id", value: $external_id }
+        { name: "gateway_id", value: $gateway_id }
+        { name: "state", value: $state }
+      ]
+    }
+    form_configuration_name: "modules/payments/create_connected_account_form"
+  ) {
+    id
+    type: property(name: "type")
+    gateway_id: property(name: "gateway_id")
+    state: property(name: "state")
+    external_id: property(name: "external_id")
+    created_at
+  }
+}

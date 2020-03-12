@@ -7,3 +7,5 @@ properties:
   type: string
 - name: state
   type: string
+- name: type
+  type: string
