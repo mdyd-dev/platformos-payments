@@ -2,7 +2,7 @@
 slug: payments/api/create_payment
 method: post
 layout_name: ''
-authorization_policies: 
+authorization_policies:
 - modules/payments/validate_api_signature
 ---
 
@@ -14,14 +14,15 @@ authorization_policies:
 {%- assign credit_card = cc.customizations.results.first -%}
 {%- query_graph 'modules/payments/get_customer', result_name: "cu", id: credit_card.properties.customer_id -%}
 {%- assign customer = cu.customizations.results.first -%}
-{%- assign application_fee = context.params.application_fee_cents -%}
+{% comment %} application_fee => application_fee_amount ; New Stripe requirements {% endcomment %}
+{%- assign application_fee_amount = context.params.application_fee_cents -%}
 {%- assign description = context.params.description -%}
 {%- assign destination = context.params.destination -%}
 {%- assign idempotence_key = context.params.idempotence_key -%}
 {%- parse_json "payment_data" -%}
   {
     "id": "{{ credit_card.id }}",
-    {%- if application_fee != blank -%}"application_fee": {{ application_fee }},{%- endif -%}
+    {%- if application_fee_amount != blank -%}"application_fee_amount": {{ application_fee_amount }},{%- endif -%}
     {%- if description != blank -%}"description": "{{ description }}",{%- endif -%}
     {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
     {%- if idempotence_key != blank -%}"idempotence_key": "{{ idempotence_key }}",{%- endif -%}
@@ -35,7 +36,7 @@ authorization_policies:
   {
     "properties": [
        { "name": "request_type", "value": "create_payment" },
-       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" } 
+       { "name": "data", "value":  "{{ payment_data | json | escape_javascript }}" }
      ]
   }
 {%- endparse_json -%}

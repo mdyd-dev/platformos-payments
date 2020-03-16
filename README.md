@@ -44,13 +44,13 @@ PlatformOS Payment module is designed to work with multipl Payment provides. For
 git submodule add https://github.com/mdyd-dev/platformos-payments-stripe modules/stripe
 ```
 4. Edit `modules/stripe/template-values.json` and set Stripe public and secret keys
-5. Deploy instance.  
+5. Deploy instance.
 6. Make sure enable_sms_and_api_workflow_alerts_on_staging in your instance configuration is set to true
 
 ## Payment Model
 
 Payment model represents money transfer from payment source (typically Credit Card) to payment receiver usually Payment Gateway.
-Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one. 
+Payment should be immutable, it should be successful or failed and should not be changed. If one payment fails for some reason (insufficient funds) you should not update the failed payment but create new one.
 
 The easiest way to enable payment creation on your page is by simply embeding the form with proper configuration as in the example below.
 
@@ -87,7 +87,7 @@ Where:
 - gateway - payent gateway used for transaction
 - request_type - defines type of request that is send to payment gateway, value is determined by installed "gateway module".
 - redirect_to - point of redirection
-- configuration - 
+- configuration -
 
 Data object:
 - currency - transaction currency
@@ -95,7 +95,7 @@ Data object:
 - statement_descriptor - description of the transaction visible on the bank statement
 - amount_cents - Charge amount in cents
 
-Additinal Data object properties
+Additional Data object properties
 - metadata - json object with key/value pair storing extra info about this charge in Stripe
 - application_fee_cents - Application fee that should be deducted from the amount_cents and collected as a fee.
 - email - email of the customer that is being charged
