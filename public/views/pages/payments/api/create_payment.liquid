@@ -24,7 +24,7 @@ authorization_policies:
     "id": "{{ credit_card.id }}",
     {%- if application_fee_amount != blank -%}"application_fee_amount": {{ application_fee_amount }},{%- endif -%}
     {%- if description != blank -%}"description": "{{ description }}",{%- endif -%}
-    {%- if destination != blank -%}"destination": "{{ destination }}",{%- endif -%}
+    {%- if destination != blank -%}"transfer_data[destination]": "{{ destination }}",{%- endif -%}
     {%- if idempotence_key != blank -%}"idempotence_key": "{{ idempotence_key }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
@@ -48,5 +48,7 @@ authorization_policies:
 {%- if g.customization_create.properties.request_errors != blank -%}
   {"error": "{{ g.customization_create.properties.request_errors }}", "status":"error"}
 {%- else -%}
-  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | add_hash_key: 'status', 'ok' | json }}
+  {%- assign response_body = g.customization_create.properties.data | to_hash -%}
+  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | add_hash_key: 'status', 'ok' | add_hash_key: 'application_fee', response_body.application_fee_amount | add_hash_key: 'destination', response_body['transfer_data[destination]'] | json }}
+  {%- log payment_properties -%}
 {%- endif -%}
