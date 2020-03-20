@@ -18,13 +18,32 @@ authorization_policies:
 {%- assign application_fee_amount = context.params.application_fee_cents -%}
 {%- assign description = context.params.description -%}
 {%- assign destination = context.params.destination -%}
+
+
+{% comment %} For US clients set `transfer_data[destination]` for others set `destination` {% endcomment %}
+{%- if destination != blank -%}
+  {%- parse_json "destination_data" -%}
+  {
+    "gateway_id": "{{ destination }}"
+  }
+  {%- endparse_json -%}
+
+  {%- query_graph "modules/payments/gateway_get", data: destination_data, template: "modules/stripe/get_account" -%}
+  {%- parse_json 'response' %}{{ g.api_call_send.response.body }}{% endparse_json -%}
+  {%- if response.country == 'US' -%}
+    {%- assign destination_field = '"transfer_data[destination]": "' | append: destination | append: '",' -%}
+  {%- else -%}
+    {%- assign destination_field = '"destination": "' | append: destination | append: '",' -%}
+  {%- endif -%}
+{%- endif -%}
+
 {%- assign idempotence_key = context.params.idempotence_key -%}
 {%- parse_json "payment_data" -%}
   {
     "id": "{{ credit_card.id }}",
     {%- if application_fee_amount != blank -%}"application_fee_amount": {{ application_fee_amount }},{%- endif -%}
     {%- if description != blank -%}"description": "{{ description }}",{%- endif -%}
-    {%- if destination != blank -%}"transfer_data[destination]": "{{ destination }}",{%- endif -%}
+    {%- if destination_field != blank -%}{{ destination_field }}{%- endif -%}
     {%- if idempotence_key != blank -%}"idempotence_key": "{{ idempotence_key }}",{%- endif -%}
     "customer": "{{ customer.gateway_id }}",
     "source": "{{ credit_card.properties.gateway_id }}",
