@@ -68,6 +68,11 @@ authorization_policies:
   {"error": "{{ g.customization_create.properties.request_errors }}", "status":"error"}
 {%- else -%}
   {%- assign response_body = g.customization_create.properties.data | to_hash -%}
-  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | add_hash_key: 'status', 'ok' | add_hash_key: 'application_fee', response_body.application_fee_amount | add_hash_key: 'destination', response_body['transfer_data[destination]'] | json }}
+  {%- if response_body.destination != blank -%}
+    {%- assign destination_key = response_body.destination -%}
+  {%- else -%}
+    {%- assign destination_key = response_body['transfer_data[destination]'] -%}
+  {% endif %}
+  {{ payment_properties | add_hash_key: 'id', g.customization_create.id | add_hash_key: 'status', 'ok' | add_hash_key: 'application_fee', response_body.application_fee_amount | add_hash_key: 'destination', destination_key | json }}
   {%- log payment_properties -%}
 {%- endif -%}
