@@ -1,0 +1,9 @@
+{% comment %} add_payments_default_email GraphQL queries go below {% endcomment %}
+{% log 'add_payments_default_email', type: 'MODULES/PAYMENTS/MIGRATION' %}
+
+{% graphql g = 'modules/payments/set_constant',
+  name: 'module_payments_default_email',
+  value: '<%= &default_email =%>'
+%}
+
+{% log g, type: 'MODULES/PAYMENTS/MIGRATION' %}
