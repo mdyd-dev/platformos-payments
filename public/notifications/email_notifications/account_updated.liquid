@@ -3,7 +3,7 @@ name: account_updated
 delay: 0
 enabled: true
 from: >
-  "{{ context.constants.module_payments_default_email | default: 'test@example.com' }}"
+  {{- context.constants.module_payments_default_email | default: 'test@example.com' | raw_escape_string | html_safe -}}
 subject: Merchant Account Updated
 to: |-
   {% graphql u = "modules/payments/get_user", id: form.user_id %}
