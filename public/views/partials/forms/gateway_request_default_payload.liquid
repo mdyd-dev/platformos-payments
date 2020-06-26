@@ -13,7 +13,7 @@
   {%- parse_json 'response_data' -%}
     {%- include response_parser, gateway_response: response.api_call_send.response, data: data -%}
   {%- endparse_json -%}
-  {% log response_data, type: "\n\nPAYMENT GATEWAY PARSED RRESPONSE" %}
+  {% log response_data, type: "PAYMENT GATEWAY PARSED RRESPONSE" %}
   {% if response_data.errors == blank or response_data.errors == empty %}
     {%- assign form_name = 'modules/payments/' | append: request_type | append: '_form' -%}
     {% if request_type contains 'delete' %}
@@ -25,7 +25,8 @@
       {% log g, type: "DEBUG g" %}
     {% else %}
       {%- graphql g = "modules/payments/create_customization", form: form_name, data: response_data -%}
-      {%- log g, type: "PAYOUT created" %}
+      {% assign log_type = request_type | append: ' CREATED' %}
+      {%- log g, type: log_type %}
       {%- assign customization = g.customization_create %}
     {% endif %}
     {% log customization, type: "DEBUG REQUEST customization" %}
