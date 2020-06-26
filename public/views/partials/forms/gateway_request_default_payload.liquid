@@ -26,6 +26,7 @@
     {% else %}
       {%- graphql g = "modules/payments/create_customization", form: form_name, data: response_data -%}
       {% assign log_type = request_type | append: ' CREATED' %}
+      {%- log g, type: log_type %}
       {%- assign customization = g.customization_create %}
     {% endif %}
     {% log customization, type: "DEBUG REQUEST customization" %}
