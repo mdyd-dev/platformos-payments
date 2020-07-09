@@ -11,3 +11,6 @@ properties:
   type: string
 - name: state
   type: string
+- name: external_id
+- name: destination
+- name: source
