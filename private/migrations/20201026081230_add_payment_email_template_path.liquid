@@ -1,0 +1,10 @@
+
+{% comment %} 20201026081230_add_payment_email_template_path GraphQL queries go below {% endcomment %}
+{% log '20201026081230_add_payment_email_template_path', type: 'MODULES/PAYMENTS/MIGRATION' %}
+
+{% graphql g = 'modules/payments/set_constant',
+  name: 'module_payments_email_templates',
+  value: '<%= &email_templates =%>'
+%}
+
+{% log g, type: 'MODULES/PAYMENTS/MIGRATION' %}
