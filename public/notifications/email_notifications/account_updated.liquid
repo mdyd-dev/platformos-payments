@@ -1,6 +1,11 @@
 ---
 name: account_updated
-delay: 0
+delay: >
+  {% if form.properties.state == 'verified' %}
+    0
+  {% else %}
+    5
+  {% endif %}
 enabled: true
 from: >
   {{- context.constants.module_payments_default_email | default: 'test@example.com' | raw_escape_string | html_safe -}}
@@ -8,6 +13,17 @@ subject: Merchant Account Updated
 to: |-
   {% graphql u = "modules/payments/get_user", id: form.user_id %}
   {{ u.user.email }}
-trigger_condition: true
+trigger_condition: >
+  {%- graphql account = 'modules/payments/get_accounts_by_gateway_id', gateway_id: form.properties.gateway_id
+    | dig: 'customizations', 'results'
+    | last
+  %}
+  {% assign request = account.properties.data | parse_json %}
+  {% if form.properties.state == 'verified' %}
+    true
+  {% elsif request.verification.fields_needed.size > 0 and account.properties.state != 'verified' %}
+    true
+  {% endif %}
 ---
-{% include "<%= &email_templates =%>account_updated" %}
+{% assign path = context.constants.module_payments_email_templates | default: 'modules/payments/emails/' | append: '/account_updated' %}
+{% include path %}
