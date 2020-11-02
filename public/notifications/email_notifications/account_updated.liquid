@@ -11,7 +11,7 @@ to: |-
 trigger_condition: >
   {%- graphql account = 'modules/payments/get_accounts_by_gateway_id', gateway_id: form.properties.gateway_id
     | dig: 'customizations', 'results'
-    | first
+    | last
   %}
   {% assign request = account.properties.data | parse_json %}
   {% if form.properties.state == 'verified' %}
