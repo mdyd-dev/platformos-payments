@@ -1,6 +1,11 @@
 ---
 name: account_updated
-delay: 5
+delay: >
+  {% if form.properties.state == 'verified' %}
+    0
+  {% else %}
+    5
+  {% endif %}
 enabled: true
 from: >
   {{- context.constants.module_payments_default_email | default: 'test@example.com' | raw_escape_string | html_safe -}}
@@ -20,5 +25,5 @@ trigger_condition: >
     true
   {% endif %}
 ---
-{% assign path = context.constants.module_payments_email_templates | default: 'modules/payments/emails/' %}
-{% include "<%= &email_templates =%>/account_updated" %}
+{% assign path = context.constants.module_payments_email_templates | default: 'modules/payments/emails/' | append: '/account_updated' %}
+{% include path %}
