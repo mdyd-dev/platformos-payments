@@ -130,6 +130,7 @@ The easiest way to enable payment creation on your page is by embedding the form
     "currency": "USD",
     "description": "Charge Example",
     "statement_descriptor": "Example 1.",
+    "statement_descriptor_suffix": "Order #123",
     "amount": "500",
     "require_zip": true
   }

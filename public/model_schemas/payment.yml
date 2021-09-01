@@ -15,6 +15,7 @@ properties:
   type: string
 - name: description
   type: string
+- name: statement_descriptor_suffix
 - name: statement_descriptor
   type: string
 - name: customer_id
