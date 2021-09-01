@@ -1,0 +1,37 @@
+---
+name: create_bank_account_form
+resource: modules/payments/bank_account
+request_allowed: false
+resource_owner: anyone
+redirect_to: "{{ context.params.redirect_to }}"
+fields:
+  customizable_type:
+  customizable_id:
+  properties:
+    customer_email:
+      property_options:
+        virtual: true
+    token:
+      property_options:
+        virtual: true
+    metadata:
+      property_options:
+        virtual: true
+    gateway_customer_id:
+      validation:
+        presence: true
+    customer_id:
+      validation:
+        presence: true
+    external_id:
+      validation:
+        presence: false
+    gateway_id:
+      validation:
+        presence: true
+    account_holder_name:
+    account_holder_type:
+    bank_name:
+    last4:
+    routing_number:
+---

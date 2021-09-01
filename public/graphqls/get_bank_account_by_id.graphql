@@ -1,0 +1,16 @@
+query get_bank_acount_by_id($id: ID!) {
+  customizations(
+    per_page: 1
+    id: $id
+    name: "modules/payments/bank_account"
+    is_deleted: false
+    sort: {
+      name: "created_at", order: "DESC"
+    }
+  ) {
+    results {
+      id
+      properties
+    }
+  }
+}
