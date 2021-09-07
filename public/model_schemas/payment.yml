@@ -31,6 +31,7 @@ properties:
 - name: failed_at
   type: datetime
 - name: response_errors
+- name: failure_message
   type: string
 - name: state
   type: string
