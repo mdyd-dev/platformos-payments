@@ -1,0 +1,18 @@
+---
+name: webhook_update_payment_form
+resource: modules/payments/payment
+resource_owner: anyone
+fields:
+  properties:
+    state:
+      validation:
+        presence: true
+    paid_at:
+    failed_at:
+    external_id:
+      property_options:
+        readonly: true
+async_callback_actions:
+  content: >
+    {% include "<%= &webhook_update_payment_async_callback =%>" %}
+---
