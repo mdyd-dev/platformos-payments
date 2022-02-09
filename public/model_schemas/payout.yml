@@ -19,6 +19,8 @@ properties:
   type: string
 - name: paid_at
   type: datetime
+- name: created_at
+  type: datetime
 - name: failed_at
   type: datetime
 - name: response_errors
