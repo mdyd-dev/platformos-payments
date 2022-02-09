@@ -1,5 +1,5 @@
 ---
-slug: webhooks/listen
+slug: webhooks/listen_main_account
 method: post
 layout_name: ''
 authorization_policies:
@@ -9,8 +9,8 @@ authorization_policies:
 {%- assign stripe_signature = context.headers.HTTP_STRIPE_SIGNATURE | split: "," %}
 {%- assign t = stripe_signature[0] | split: '=' | last %}
 {%- assign secret = stripe_signature[1] | split: '=' | last %}
-{%- assign webhook_listen_url = "https://" | append: context.location.host | append: "/webhooks/listen" %}
-{% graphql last_webhook_config = 'modules/payments/get_webhook_endpoints', livemode: context.exports.payment.livemode, url: webhook_listen_url | dig: 'customizations', 'results' | last %}
+{%- assign webhook_listen_url = "https://" | append: context.location.host | append: "/webhooks/listen_main_account" %}
+{% graphql last_webhook_config = 'modules/payments/get_webhook_endpoints', livemode: context.exports.payment.livemode, url: webhook_listen_url, event: context.params.type | dig: 'customizations', 'results' | last %}
 {% if last_webhook_config.id == blank %}
   {% log "webhook_endpoint NOT FOUND", type: "ERROR" %}
 {% endif %}

@@ -1,0 +1,11 @@
+properties:
+  - name: gateway_id
+  - name: gateway_customer_id
+  - name: customer_id
+  - name: external_id
+  - name: account_holder_name
+  - name: account_holder_type
+  - name: bank_name
+  - name: last4
+  - name: routing_number
+

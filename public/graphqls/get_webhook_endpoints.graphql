@@ -3,17 +3,20 @@ query get_webhook_endpoints(
   $page: Int = 1
   $livemode: String
   $url: String
+  $event: String
 ) {
-  customizations(
+  customizations: models(
     per_page: $per_page
     page: $page
-    name: "modules/payments/webhook_endpoint"
-    is_deleted: false
-    sort: {name: "created_at", order: "ASC"}
-    properties: [
-      {name: "livemode", value: $livemode}
-      {name: "url", value: $url}
-    ]
+    filter: {
+      name: { value: "modules/payments/webhook_endpoint" }
+      properties: [
+        { name: "livemode", value: $livemode }
+        { name: "url", value: $url }
+        { name: "enabled_events", array_contains: $event }
+      ]
+    }
+    sort: { created_at: {order: ASC }}
   ) {
     results {
       id

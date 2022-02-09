@@ -24,10 +24,28 @@ fields:
     card_exp_month:
     card_exp_year:
     card_last4:
+    source_type:
+      property_options:
+        virtual: true
+    account_holder_name:
+      property_options:
+        virtual: true
+    account_holder_type:
+      property_options:
+        virtual: true
+    bank_name:
+      property_options:
+        virtual: true
+    last4:
+      property_options:
+        virtual: true
+    routing_number:
+      property_options:
+        virtual: true
 callback_actions: >
   {% log form, type:"form" %}
   {% if form.properties.default_source != blank %}
-    {% if form.properties.skip_credit_card_creation != "true" %}
+    {% if form.properties.skip_credit_card_creation != "true" and form.properties.source_type == "card" %}
       {% comment %}  TODO move to Stripe module  {% endcomment %}
       {% parse_json 'data' %}
         {
@@ -43,13 +61,36 @@ callback_actions: >
           ]
         }
       {% endparse_json %}
-      {% log data.properties, type:"DATA" %}
 
       {%- graphql g_card = 'modules/payments/create_customization',
         data: data, form: 'modules/payments/create_credit_card_form'
       -%}
 
       {% log g_card, type: "credit_card" %}
+    {% endif %}
+    {% if form.properties.source_type == "bank_account" %}
+      {% comment %}  TODO move to Stripe module  {% endcomment %}
+      {% parse_json 'data' %}
+        {
+          "properties": [
+            { "name": "customer_id", "value": "{{ form.id }}" },
+            { "name": "external_id", "value": "{{ form.properties.external_id }}" },
+            { "name": "gateway_id", "value": "{{  form.properties.default_source }}" },
+            { "name": "gateway_customer_id", "value": "{{  form.properties.gateway_id }}" },
+            { "name": "account_holder_name", "value": "{{ form.properties.account_holder_name }}" },
+            { "name": "account_holder_type", "value": "{{ form.properties.account_holder_type }}" },
+            { "name": "bank_name", "value": "{{ form.properties.bank_name }}" },
+            { "name": "last4", "value": "{{ form.properties.last4 }}" },
+            { "name": "routing_number", "value": "{{ form.properties.routing_number }}" }
+          ]
+        }
+      {% endparse_json %}
+
+      {%- graphql g_bank_account = 'modules/payments/create_customization',
+        data: data, form: 'modules/payments/create_bank_account_form'
+      -%}
+
+      {% log bank_account, type: "bank_account" %}
     {% endif %}
   {% endif %}
 default_payload: >

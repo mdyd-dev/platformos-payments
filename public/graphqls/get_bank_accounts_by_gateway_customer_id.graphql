@@ -1,0 +1,22 @@
+query get_bank_accounts_by_gateway_customer_id(
+  $gateway_customer_id: String!
+  $gateway_id: String
+  $id: ID
+) {
+  customizations(
+    per_page: 20
+    id: $id
+    name: "modules/payments/bank_account"
+    is_deleted: false
+    properties: [
+      { name: "gateway_id", value: $gateway_id }
+      { name: "gateway_customer_id", value: $gateway_customer_id }
+    ]
+    sort: { name: "created_at", order: "DESC" }
+  ) {
+    results {
+      id
+      properties
+    }
+  }
+}
