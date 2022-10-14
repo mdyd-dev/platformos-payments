@@ -3,7 +3,7 @@ query get_webhook_endpoints(
   $page: Int = 1
   $livemode: String
   $url: String
-  $event: String
+  $event: [String!]
 ) {
   customizations: models(
     per_page: $per_page
